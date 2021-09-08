@@ -1,7 +1,8 @@
 /********** FOR VSCODE ************/
-#ifdef __VSCODE__
-#define __i386__ 1
-#endif
+//#ifdef __VSCODE__
+//#define __i386__
+//#define __x86_64__
+//#endif
 /**********************************/
 
 typedef unsigned char uchar;

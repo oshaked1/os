@@ -1,5 +1,5 @@
-C_SOURCES = $(wildcard kernel/*.c drivers/*.c libc/*.c)
-HEADERS = $(wildcard kernel/*.h drivers/*.h libc/*.h)
+C_SOURCES = $(wildcard kernel/*.c drivers/*.c libc/*.c arch/x86/*.c)
+HEADERS = $(wildcard kernel/*.h drivers/*.h libc/*.h arch/x86/*.h)
 # Nice syntax for file extension replacement
 OBJ = ${C_SOURCES:.c=.o}
 
@@ -15,7 +15,7 @@ CFLAGS = -g
 # We use the Windows executable from within WSL (see https://docs.microsoft.com/en-us/windows/wsl/interop)
 QEMU = qemu-system-i386.exe
 # redirect serial output to stdout and a logfile
-QEMUFLAGS = -chardev stdio,id=char0,logfile=serial.log,signal=off -serial chardev:char0
+QEMUFLAGS = -chardev stdio,id=char0,logfile=serial.log,signal=off -serial chardev:char0 -no-reboot
 
 # First rule is run by default
 os-image.bin: boot/bootsector.bin kernel.bin
@@ -52,5 +52,5 @@ debug: os-image.bin kernel.elf
 
 clean:
 	rm -rf *.bin *.dis *.o os-image.bin *.elf
-	rm -rf kernel/*.o boot/*.bin drivers/*.o boot/*.o libc/*.o
-	rm serial.log
+	rm -rf kernel/*.o boot/*.bin drivers/*.o boot/*.o libc/*.o arch/x86/*.o
+	rm -f serial.log

@@ -12,10 +12,10 @@
                 "__VSCODE__"
             ],
             "windowsSdkVersion": "10.0.15063.0",
-            "compilerPath": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\VC\\Tools\\MSVC\\14.11.25503\\bin\\HostX64\\x64\\cl.exe",
+            "compilerPath": "C:\\Tools\\cygwin64\\bin\\gcc.exe",
             "cStandard": "c17",
             "cppStandard": "c++17",
-            "intelliSenseMode": "windows-msvc-x64"
+            "intelliSenseMode": "gcc-x86"
         }
     ],
     "version": 4

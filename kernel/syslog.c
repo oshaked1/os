@@ -121,8 +121,3 @@ void log(char *subsys, int severity, char *mnemonic, char *message)
         serial_sends(syslog_serial_port, "\n");
     }
 }
-
-void debug(char *message)
-{
-    log("SYS", 7, "DEBUG", message);
-}
