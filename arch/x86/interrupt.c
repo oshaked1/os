@@ -1,4 +1,5 @@
 #include "interrupt.h"
+#include "idt.h"
 
 struct idt_entry idt[255];
 struct idt_desc idt_desc;

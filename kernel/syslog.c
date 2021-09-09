@@ -12,7 +12,7 @@ ushort dst_syslog_severity  = LOG_INFO;
 ushort syslog_serial_port = COM1; // COM1 is used by default
 bool serial_initialized = FALSE;
 
-int get_dst_severity(int dst)
+int get_log_dst_severity(int dst)
 {
     switch (dst)
     {
@@ -42,7 +42,7 @@ int get_dst_severity(int dst)
     }
 }
 
-void set_dst_severity(int dst, int severity)
+void set_log_dst_severity(int dst, int severity)
 {
     if (severity < 0 || severity > 7)
         return;

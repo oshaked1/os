@@ -1,7 +1,4 @@
 #include "../../libc/types.h"
-#include "../../kernel/syslog.h"
-#include "../../libc/stdlib.h"
-#include "idt.h"
 
 struct interrupt_info
 {

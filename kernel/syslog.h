@@ -13,7 +13,7 @@ enum LOG_DST{DST_SCREEN, DST_SERIAL, DST_VTY, DST_LOGFILE, DST_SYSLOG};
 
 #define debug(message) log("SYS", 7, "DEBUG", message)
 
-int get_dst_severity(int dst);
-void set_dst_severity(int dst, int severity);
+int get_log_dst_severity(int dst);
+void set_log_dst_severity(int dst, int severity);
 void set_syslog_serial_port(ushort com);
 void log(char *subsys, int severity, char *mnemonic, char *message);

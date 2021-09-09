@@ -1,10 +1,3 @@
-/********** FOR VSCODE ************/
-//#ifdef __VSCODE__
-//#define __i386__
-//#define __x86_64__
-//#endif
-/**********************************/
-
 typedef unsigned char uchar;
 typedef unsigned short ushort;
 typedef unsigned int uint;

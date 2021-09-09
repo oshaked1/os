@@ -1,6 +1,4 @@
 #include "../libc/types.h"
-#include "../libc/string.h"
-#include "io.h"
 
 // baud rate definitions
 #define CLOCK_RATE   115200

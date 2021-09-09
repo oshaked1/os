@@ -5,14 +5,6 @@
 
 typedef enum {PL0, PL1, PL2, PL3}DPL;
 
-/*struct idt_entry {
-    uint16 offset_high;
-    uint8 flags;
-    uint8 reserved;
-    uint16 segment;
-    uint16 offset_low;
-} __attribute__((packed));*/
-
 struct idt_entry {
     uint16 offset_low;
     uint16 segment;
