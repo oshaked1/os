@@ -5,15 +5,15 @@
 void set_baud_rate(ushort com, uint baud)
 {
     // set DLAB
-    uint8 line_ctrl = port_byte_in(SERIAL_LINE_CTRL(com));
-    port_byte_out(SERIAL_LINE_CTRL(com), line_ctrl | 0b10000000);
+    uint8 line_ctrl = inb(SERIAL_LINE_CTRL(com));
+    outb(SERIAL_LINE_CTRL(com), line_ctrl | 0b10000000);
 
     // send baud rate divisor
-    port_byte_out(SERIAL_DATA(com), (DIVISOR(baud) & 0xff));
-    port_byte_out(SERIAL_INT_ENABLE(com), (DIVISOR(baud) >> 8) & 0xff);
+    outb(SERIAL_DATA(com), (DIVISOR(baud) & 0xff));
+    outb(SERIAL_INT_ENABLE(com), (DIVISOR(baud) >> 8) & 0xff);
 
     // clear DLAB
-    port_byte_out(SERIAL_LINE_CTRL(com), line_ctrl & 0b01111111);
+    outb(SERIAL_LINE_CTRL(com), line_ctrl & 0b01111111);
 }
 
 void init_serial(ushort com)
@@ -22,7 +22,7 @@ void init_serial(ushort com)
     set_baud_rate(com, DEFAULT_BAUD);
 
     // set data bits to default
-    uint8 line_ctrl = port_byte_in(SERIAL_LINE_CTRL(com));
+    uint8 line_ctrl = inb(SERIAL_LINE_CTRL(com));
     line_ctrl = (line_ctrl & (~DATA_BITS_MASK)) | DEFAULT_DATA_BITS;
 
     // set stop bits to default
@@ -32,15 +32,15 @@ void init_serial(ushort com)
     line_ctrl = (line_ctrl & (~PARITY_MASK)) | DEFAULT_PARITY;
 
     // update line control
-    port_byte_out(SERIAL_LINE_CTRL(com), line_ctrl);
+    outb(SERIAL_LINE_CTRL(com), line_ctrl);
 
     // disable all interrupts
-    port_byte_out(SERIAL_INT_ENABLE(com), INT_NONE);
+    outb(SERIAL_INT_ENABLE(com), INT_NONE);
 }
 
 void serial_sendb(ushort com, byte data)
 {
-    port_byte_out(SERIAL_DATA(com), data);
+    outb(SERIAL_DATA(com), data);
 }
 
 void serial_send(ushort com, byte *data, size_t len)

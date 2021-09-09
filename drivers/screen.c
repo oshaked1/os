@@ -11,11 +11,11 @@
  */
 uint get_cursor_pos()
 {
-    port_byte_out(SCREEN_CTRL, VGA_CURSOR_HIGH);
-    uint8 cursor_high = port_byte_in(SCREEN_DATA);
+    outb(SCREEN_CTRL, VGA_CURSOR_HIGH);
+    uint8 cursor_high = inb(SCREEN_DATA);
 
-    port_byte_out(SCREEN_CTRL, VGA_CURSOR_LOW);
-    uint8 cursor_low = port_byte_in(SCREEN_DATA);
+    outb(SCREEN_CTRL, VGA_CURSOR_LOW);
+    uint8 cursor_low = inb(SCREEN_DATA);
 
     return (cursor_high << 8) + cursor_low;
 }
@@ -28,11 +28,11 @@ uint get_cursor_pos()
  */
 void set_cursor_pos(uint cursor_pos)
 {
-    port_byte_out(SCREEN_CTRL, VGA_CURSOR_HIGH);
-    port_byte_out(SCREEN_DATA, (cursor_pos & 0xff00) >> 8);
+    outb(SCREEN_CTRL, VGA_CURSOR_HIGH);
+    outb(SCREEN_DATA, (cursor_pos & 0xff00) >> 8);
 
-    port_byte_out(SCREEN_CTRL, VGA_CURSOR_LOW);
-    port_byte_out(SCREEN_DATA, cursor_pos & 0xff);
+    outb(SCREEN_CTRL, VGA_CURSOR_LOW);
+    outb(SCREEN_DATA, cursor_pos & 0xff);
 }
 
 /**
