@@ -2,6 +2,8 @@
 #include "../drivers/screen.h"
 #include "../drivers/serial.h"
 #include "../libc/stdlib.h"
+#include "../libc/stdio.h"
+#include "../libc/stdarg.h"
 
 ushort dst_screen_severity  = LOG_NOTICE;
 ushort dst_serial_severity  = LOG_DEBUG;
@@ -81,25 +83,25 @@ void set_syslog_serial_port(ushort com)
     syslog_serial_port = com;
 }
 
-void log(char *subsys, int severity, char *mnemonic, char *message)
+void log(const char *subsys, int severity, const char *mnemonic, const char *message, ...)
 {
+    char str[MAX_LENGTH];
+    va_list args;
+    va_start(args, message);
+    vsnprintf(str, MAX_LENGTH, message, args);
+    va_end(args);
+
     if (severity < 0 || severity > 7)
         return;
 
+    char fullstr[MAX_LENGTH];
+    snprintf(fullstr, MAX_LENGTH, "%%%s-%d-%s: %s\n", subsys, severity, mnemonic, str);
+    // if the message was too long and was cut short, make sure it ends with a newline
+    fullstr[MAX_LENGTH-2] = '\n';
+
     // print message on screen
     if (dst_screen_severity >= severity)
-    {
-        kputchar('%');
-        kprint(subsys);
-        kputchar('-');
-        char temp[2];
-        kprint(itoa(severity, temp, 10));
-        kputchar('-');
-        kprint(mnemonic);
-        kprint(": ");
-        kprint(message);
-        kputchar('\n');
-    }
+        kprint(fullstr);
 
     // send message to serial port
     if (dst_serial_severity >= severity)
@@ -109,15 +111,17 @@ void log(char *subsys, int severity, char *mnemonic, char *message)
             init_serial(syslog_serial_port);
             serial_initialized = TRUE;
         }
-        serial_sends(syslog_serial_port, "%");
-        serial_sends(syslog_serial_port, subsys);
-        serial_sends(syslog_serial_port, "-");
-        char temp[2];
-        serial_sends(syslog_serial_port, itoa(severity, temp, 10));
-        serial_sends(syslog_serial_port, "-");
-        serial_sends(syslog_serial_port, mnemonic);
-        serial_sends(syslog_serial_port, ": ");
-        serial_sends(syslog_serial_port, message);
-        serial_sends(syslog_serial_port, "\n");
+        serial_sends(syslog_serial_port, fullstr);
     }
+}
+
+void debug(const char *message, ...)
+{
+    char str[MAX_LENGTH];
+    va_list args;
+    va_start(args, message);
+    vsnprintf(str, MAX_LENGTH, message, args);
+    va_end(args);
+
+    log("SYS", 7, "DEBUG", str);
 }

@@ -1,6 +1,7 @@
 #include "../libc/types.h"
 #include "../libc/string.h"
 #include "../libc/stdlib.h"
+#include "../libc/stdio.h"
 #include "../drivers/screen.h"
 #include "../arch/x86/interrupt.h"
 #include "syslog.h"
@@ -30,18 +31,18 @@ void main()
     log("SYS", 6, "INIT", "ISRs have been installed");
 
     // show that interrupts work
-    debug("registering handler for int 50");
+    debug("registering handler for int %d", 50);
     register_interrupt_handler(50, test_handler);
-    debug("doing int 3");
+    debug("doing int %d", 3);
     asm volatile ("int $3");
     debug("returned to kernel");
-    debug("doing int 15");
+    debug("doing int %d", 15);
     asm volatile ("int $15");
     debug("returned to kernel");
-    debug("doing int 50");
+    debug("doing int %d", 50);
     asm volatile ("int $50");
     debug("returned to kernel");
-    debug("doing int 60, which doesn't exist");
+    debug("doing int %d, which doesn't exist", 60);
     asm volatile ("int $60");
     debug("returned to kernel");
 }

@@ -11,9 +11,10 @@ enum LOG_SEVERITY{LOG_EMERG, LOG_ALERT, LOG_CRIT, LOG_ERR,
 enum LOG_DST{DST_SCREEN, DST_SERIAL, DST_VTY, DST_LOGFILE, DST_SYSLOG};
 #endif
 
-#define debug(message) log("SYS", 7, "DEBUG", message)
+#define MAX_LENGTH 512
 
 int get_log_dst_severity(int dst);
 void set_log_dst_severity(int dst, int severity);
 void set_syslog_serial_port(ushort com);
-void log(char *subsys, int severity, char *mnemonic, char *message);
+void log(const char *subsys, int severity, const char *mnemonic, const char *message, ...);
+void debug(const char *message, ...);

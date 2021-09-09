@@ -68,6 +68,61 @@ char *itoa(int value, char *str, int base)
     return str;
 }
 
+char *itoa_unsigned(int value, char *str, int base)
+{
+    // make sure base is valid
+    if (base == 0 || base > MAX_BASE)
+    {
+        str[0] = 0;
+        return str;
+    }
+
+    uint tempval = (uint)value;
+        
+    // temporary char array for storing reversed representation of the number.
+    // array size is the size in bits of the number +1 for null-terminator 
+    // (longest possible representation is in binary, with a character for each bit)
+    char temp[sizeof(int)*8+1];
+
+    char c;
+    uint digit;
+    int i = 0;
+    if (tempval == 0)
+        temp[i++] = '0';
+    while (tempval != 0)
+    {
+        digit = tempval % base;
+        c = digit_to_char(digit);
+        if (c == NULL)
+        {
+            str[0] = 0;
+            return str;
+        }
+        temp[i++] = c;
+        tempval /= (uint)base;
+    }
+    temp[i] = 0;
+    
+    // reverse the string
+    strrev(temp);
+
+    // copy to output
+    strcpy(str, temp);
+    return str;
+}
+
+char *itoa_uppercase(int value, char *str, int base)
+{
+    itoa(value, str, base);
+    int i;
+    for (i = 0; i < strlen(str); i++)
+    {
+        if (str[i] >= 'a' && str[i] <= 'z')
+            str[i] += 'A' - 'a';
+    }
+    return str;
+}
+
 uint abs(int x)
 {
     if (x < 0)

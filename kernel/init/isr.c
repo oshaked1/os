@@ -14,7 +14,7 @@
  */
 void general_protection_exception()
 {
-    kernel_panic();
+    kernel_panic("a general protection exception has occurred");
 }
 
 void install_isrs()
