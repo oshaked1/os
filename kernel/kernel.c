@@ -6,6 +6,10 @@
 #include "../arch/x86/interrupt.h"
 #include "syslog.h"
 #include "init/isr.h"
+#include "init/irq.h"
+#include "../drivers/pic.h"
+
+#include "../drivers/keyboard.h"
 
 #define __DEBUG__
 
@@ -30,19 +34,11 @@ void main()
     install_isrs();
     log("SYS", 6, "INIT", "ISRs have been installed");
 
-    // show that interrupts work
-    debug("registering handler for int %d", 50);
-    register_interrupt_handler(50, test_handler);
-    debug("doing int %d", 3);
-    asm volatile ("int $3");
-    debug("returned to kernel");
-    debug("doing int %d", 15);
-    asm volatile ("int $15");
-    debug("returned to kernel");
-    debug("doing int %d", 50);
-    asm volatile ("int $50");
-    debug("returned to kernel");
-    debug("doing int %d, which doesn't exist", 60);
-    asm volatile ("int $60");
-    debug("returned to kernel");
+    // install IRQs
+    install_irqs();
+    log("SYS", 6, "INIT", "IRQs have been installed");
+
+    // setup PIC
+    setup_pic();
+    log("SYS", 6, "INIT", "PIC has been remapped");
 }

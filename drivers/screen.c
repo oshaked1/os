@@ -2,6 +2,9 @@
 #include "io.h"
 #include "../libc/string.h"
 
+// rows that are locked - backspace from the beginning of a row cannot go back into the row above if it is locked
+bool locked_rows[FRAME_BUFFER_ROWS];
+
 /*************** Private functions ***************/
 
 /**
@@ -61,12 +64,14 @@ void scroll()
     // copy all rows one row up
     int row;
     for (row = 1; row <= FRAME_BUFFER_ROWS; row++)
-    {
         memcpy(CELL_PTR(GET_ROW_POS(row-1)), CELL_PTR(GET_ROW_POS(row)), FRAME_BUFFER_COLS*2);
-    }
     
     // clear the last row
     clear_row(FRAME_BUFFER_ROWS-1);
+
+    // copy locked state of rows one row up
+    for (row = 1; row <= FRAME_BUFFER_ROWS; row++)
+        locked_rows[row -1] = locked_rows[row];
 }
 
 /*************** Public functions ****************/
@@ -113,6 +118,7 @@ uint kputchar_color(uchar c, uchar color)
     // handle line feed by moving the cursor to the beginning of the next line, scrolling the screen if needed
     else if (c == '\n')
     {
+        locked_rows[GET_ROW(cursor_pos)] = TRUE;
         cursor_pos = GET_ROW_POS(GET_ROW(cursor_pos)+1);
         if (GET_ROW(cursor_pos) >= FRAME_BUFFER_ROWS)
         {
@@ -120,6 +126,22 @@ uint kputchar_color(uchar c, uchar color)
             cursor_pos = LAST_ROW_POS;
         }
         set_cursor_pos(cursor_pos);
+    }
+
+    // handle escape by doing nothing
+    else if (c == '\e');
+
+    // handle backspace by moving the cursor one cell back and setting it's contents to none
+    else if (c == '\b')
+    {
+        // make sure we aren't returning to the previous row, or if we are, that it is allowed
+        if ((GET_ROW(cursor_pos) == GET_ROW(cursor_pos-1)) || locked_rows[GET_ROW(cursor_pos)-1] == FALSE)
+        {
+            cursor_pos -= 1;
+            set_cursor_pos(cursor_pos);
+            ushort *buffer = (ushort*)FRAME_BUFFER;
+            buffer[cursor_pos] = VGA_CELL(0, color);
+        }
     }
 
     else

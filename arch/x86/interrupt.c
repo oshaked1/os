@@ -1,5 +1,8 @@
 #include "interrupt.h"
 #include "idt.h"
+#include "../../drivers/pic.h"
+
+#include "../../kernel/syslog.h"
 
 struct idt_entry idt[255];
 struct idt_desc idt_desc;
@@ -30,6 +33,9 @@ void high_level_handler(struct interrupt_info info)
     // if the address is 0, then there is no handler registered
     if (func != 0)
         func();
+    
+    // external interrupts need to be acknowledged
+    acknowledge_interrupt(info.interrupt_number);
 }
 
 // macros for generating a generic handler for a specific interrupt number
@@ -108,7 +114,26 @@ __attribute__((naked)) void interrupt_handler_29()  {GENERIC_HANDLER_NOERR(29);}
 __attribute__((naked)) void interrupt_handler_30()  {GENERIC_HANDLER_ERR(30);}
 __attribute__((naked)) void interrupt_handler_31()  {GENERIC_HANDLER_NOERR(31);}
 
-// IRQs
+// hardware IRQs
+__attribute__((naked)) void interrupt_handler_32()  {GENERIC_HANDLER_NOERR(32);}
+__attribute__((naked)) void interrupt_handler_33()  {GENERIC_HANDLER_NOERR(33);} // keyboard input
+__attribute__((naked)) void interrupt_handler_34()  {GENERIC_HANDLER_NOERR(34);}
+__attribute__((naked)) void interrupt_handler_35()  {GENERIC_HANDLER_NOERR(35);}
+__attribute__((naked)) void interrupt_handler_36()  {GENERIC_HANDLER_NOERR(36);}
+__attribute__((naked)) void interrupt_handler_37()  {GENERIC_HANDLER_NOERR(37);}
+__attribute__((naked)) void interrupt_handler_38()  {GENERIC_HANDLER_NOERR(38);}
+__attribute__((naked)) void interrupt_handler_39()  {GENERIC_HANDLER_NOERR(39);}
+__attribute__((naked)) void interrupt_handler_40()  {GENERIC_HANDLER_NOERR(40);}
+__attribute__((naked)) void interrupt_handler_41()  {GENERIC_HANDLER_NOERR(41);}
+__attribute__((naked)) void interrupt_handler_42()  {GENERIC_HANDLER_NOERR(42);}
+__attribute__((naked)) void interrupt_handler_43()  {GENERIC_HANDLER_NOERR(43);}
+__attribute__((naked)) void interrupt_handler_44()  {GENERIC_HANDLER_NOERR(44);}
+__attribute__((naked)) void interrupt_handler_45()  {GENERIC_HANDLER_NOERR(45);}
+__attribute__((naked)) void interrupt_handler_46()  {GENERIC_HANDLER_NOERR(46);}
+__attribute__((naked)) void interrupt_handler_47()  {GENERIC_HANDLER_NOERR(47);}
+__attribute__((naked)) void interrupt_handler_48()  {GENERIC_HANDLER_NOERR(48);}
+
+// software interrupts
 __attribute__((naked)) void interrupt_handler_50()  {GENERIC_HANDLER_NOERR(50);} // test interrupt
 
 
@@ -149,6 +174,25 @@ void setup_idt()
     register_interrupt(31,  interrupt_handler_31,  PL0);
 
     // register IRQs
+    register_interrupt(32,  interrupt_handler_32,  PL0);
+    register_interrupt(33,  interrupt_handler_33,  PL0);
+    register_interrupt(34,  interrupt_handler_34,  PL0);
+    register_interrupt(35,  interrupt_handler_35,  PL0);
+    register_interrupt(36,  interrupt_handler_36,  PL0);
+    register_interrupt(37,  interrupt_handler_37,  PL0);
+    register_interrupt(38,  interrupt_handler_38,  PL0);
+    register_interrupt(39,  interrupt_handler_39,  PL0);
+    register_interrupt(40,  interrupt_handler_40,  PL0);
+    register_interrupt(41,  interrupt_handler_41,  PL0);
+    register_interrupt(42,  interrupt_handler_42,  PL0);
+    register_interrupt(43,  interrupt_handler_43,  PL0);
+    register_interrupt(44,  interrupt_handler_44,  PL0);
+    register_interrupt(45,  interrupt_handler_45,  PL0);
+    register_interrupt(46,  interrupt_handler_46,  PL0);
+    register_interrupt(47,  interrupt_handler_47,  PL0);
+    register_interrupt(48,  interrupt_handler_48,  PL0);
+
+    // register software interrupts
     register_interrupt(50,  interrupt_handler_50,  PL0);
 
     // initialize IDT description
@@ -157,4 +201,7 @@ void setup_idt()
 
     // load the IDT
     asm volatile ("lidt [idt_desc]");
+
+    // enable hardware interrupts
+    asm volatile ("sti");
 }
