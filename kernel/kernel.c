@@ -13,12 +13,7 @@
 
 #define __DEBUG__
 
-void test_handler()
-{
-    debug("entered test handler");
-}
-
-void main()
+void kmain()
 {
 #ifdef __DEBUG__
     set_log_dst_severity(DST_SCREEN, LOG_DEBUG);

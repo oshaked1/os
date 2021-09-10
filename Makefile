@@ -7,6 +7,8 @@ OBJ = ${C_SOURCES:.c=.o}
 CC = /usr/local/i386elfgcc/bin/i386-elf-gcc
 LD = /usr/local/i386elfgcc/bin/i386-elf-ld
 GDB = /usr/local/i386elfgcc/bin/i386-elf-gdb
+CC16 = /usr/local/ia16elfgcc/bin/ia16-elf-gcc
+LD16 = /usr/local/ia16elfgcc/bin/ia16-elf-ld
 # -g: Use debugging symbols in gcc
 CFLAGS = -g
 

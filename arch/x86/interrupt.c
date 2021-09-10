@@ -26,13 +26,13 @@ void register_interrupt_handler(uint8 interrupt_number, void *handler)
     interrupt_handlers[interrupt_number] = handler;
 }
 
-void high_level_handler(struct interrupt_info info)
+void high_level_handler(interrupt_info info)
 {
     // load address of handler function into func
     void (*func)() = interrupt_handlers[info.interrupt_number];
     // if the address is 0, then there is no handler registered
     if (func != 0)
-        func();
+        func(info);
     
     // external interrupts need to be acknowledged
     acknowledge_interrupt(info.interrupt_number);
@@ -94,7 +94,7 @@ __attribute__((naked)) void interrupt_handler_9()   {GENERIC_HANDLER_NOERR(9);}
 __attribute__((naked)) void interrupt_handler_10()  {GENERIC_HANDLER_ERR(10);}
 __attribute__((naked)) void interrupt_handler_11()  {GENERIC_HANDLER_ERR(11);}
 __attribute__((naked)) void interrupt_handler_12()  {GENERIC_HANDLER_ERR(12);}
-__attribute__((naked)) void interrupt_handler_13()  {GENERIC_HANDLER_ERR(13);}
+__attribute__((naked)) void interrupt_handler_13()  {GENERIC_HANDLER_ERR(13);} // general protection fault
 __attribute__((naked)) void interrupt_handler_14()  {GENERIC_HANDLER_ERR(14);}
 __attribute__((naked)) void interrupt_handler_15()  {GENERIC_HANDLER_NOERR(15);}
 __attribute__((naked)) void interrupt_handler_16()  {GENERIC_HANDLER_NOERR(16);}
