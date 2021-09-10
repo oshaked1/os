@@ -46,3 +46,15 @@ char *strcpy(char *dst, const char *src)
     dst[len] = 0;
     return dst;
 }
+
+void *memcchr(const void *buf, byte c, size_t len)
+{
+    size_t i;
+    const byte *buf2 = (byte*)buf;
+    for (i = 0; i < len; i++)
+    {
+        if (buf2[i] != c)
+            return (void*)buf2;
+    }
+    return NULL;
+}

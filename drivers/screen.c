@@ -23,7 +23,6 @@ uint get_cursor_pos()
     return (cursor_high << 8) + cursor_low;
 }
 
-
 /**
  * @brief Set the cursor pos object
  * 
@@ -87,7 +86,6 @@ uint kputchar(uchar c)
 {
     return kputchar_color(c, WHITE_ON_BLACK);
 }
-
 
 /**
  * @brief Print a character to the text mode screen.
@@ -191,6 +189,52 @@ uint kprint_color(uchar *message, uchar color)
         pos = kputchar_color(c, color);
     }
     return pos;
+}
+
+uint kprint_async(uchar *message)
+{
+    uint cursor_pos = get_cursor_pos();
+    
+    byte *current_row = (byte*)CELL_PTR(GET_ROW_POS(GET_ROW(cursor_pos)));
+    byte temprow[FRAME_BUFFER_COLS*2];
+
+    // check if row is empty
+    bool row_empty = TRUE;
+    int i, j;
+    for (i = 0; i < FRAME_BUFFER_COLS*2; i += 2)
+    {
+        // cell is empty if the character is '\0' or a space
+        if (current_row[i] != 0 && current_row[i] != ' ')
+        {
+            row_empty = FALSE;
+            break;
+        }
+    }
+
+    // save contents of current row if needed
+    if (!row_empty)
+    {
+        memcpy(temprow, current_row, FRAME_BUFFER_COLS*2);
+        kputchar('\n');
+    }
+
+    // save current column in row
+    uint col = GET_COL(cursor_pos);
+
+    // input the requested message
+    kprint(message);
+
+    cursor_pos = get_cursor_pos();
+
+    // copy saved row contents to the new empty row if needed
+    if (!row_empty)
+    {
+        current_row = CELL_PTR(GET_ROW_POS(GET_ROW(cursor_pos)));
+        memcpy(current_row, temprow, FRAME_BUFFER_COLS*2);
+    }
+
+    // move cursor to the same column it was at
+    set_cursor_pos(cursor_pos + col);
 }
 
 /**

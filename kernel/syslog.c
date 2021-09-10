@@ -101,7 +101,7 @@ void log(const char *subsys, int severity, const char *mnemonic, const char *mes
 
     // print message on screen
     if (dst_screen_severity >= severity)
-        kprint(fullstr);
+        kprint_async(fullstr);
 
     // send message to serial port
     if (dst_serial_severity >= severity)

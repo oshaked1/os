@@ -55,6 +55,7 @@ uint kputchar(uchar c);
 uint kputchar_color(uchar c, uchar color);
 uint kprint(uchar *message);
 uint kprint_color(uchar *message, uchar color);
+uint kprint_async(uchar *message);
 uint kprint_at(uchar *message, uint row, uint col);
 uint kprint_at_color(uchar *message, uint row, uint col, uchar color);
 void kcls();
