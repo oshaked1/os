@@ -4,14 +4,14 @@
 #include "screen.h"
 
 /* This driver currently has a bug (that seems to actually be caused by QEMU).
-Whenever both SHIFT keys are pressed, they kind of "cancel out" each other and result is as if only one were ever pressed
+Whenever both SHIFT keys are pressed, they kind of "cancel out" each other and the result is as if only one were ever pressed
 and never released. This means that following such a double press, the driver thinks SHIFT is pressed even though it's not.
 This can easily be undone by simply pressing one of the SHIFT keys alone. For the record, CTRL behaves the same way.
 
-I added a debug message each time this interrupt handler is invoked to print the received scan code to see what's up.
+I added a debug message each time this interrupt handler is invoked that prints the received scan code to see what's up.
 Turns out when one SHIFT is pressed, pressing the other one WILL NOT REGISTER AT ALL (or at least no interrupt is received).
 
-I tried to find this issue online to no avail :(
+I tried to find this issue online but to no avail :(
 I even sanity checked the behavior of my host OS (Windows), and it works as expected.
 For now i'm not bothering on finding a fix for this
 */
