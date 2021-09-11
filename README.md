@@ -211,13 +211,13 @@ To clean all build products, use `make clean`.
 
 ## Directory Map
 
-- `OS/arch` - Architecture specific code. Currently only x86 is supported. Other locations also contain some architecture specific code.
-  - `OS/arch/x86/realmode` - Real mode code that is used as a 2nd stage bootloader and also for servicing interrupts that use real mode BIOS utilities.
-- `OS/boot` - First stage bootloader code that makes up the 512-byte boot sector. `kernel_entry.asm` is not part of the boot sector.
-- `OS/drivers` - Hardware drivers.
-- `OS/kernel` All kernel core code.
-  - `OS/kernel/init` OS initialization code
-- `OS/libc` C standard library functions. All implemented functions are compliant to the specification (I hope). Some extra functions that are not part of the C standard are implemented.
+- `arch` - Architecture specific code. Currently only x86 is supported. Other locations also contain some architecture specific code.
+  - `arch/x86/realmode` - Real mode code that is used as a 2nd stage bootloader and also for servicing interrupts that use real mode BIOS utilities.
+- `boot` - First stage bootloader code that makes up the 512-byte boot sector. `kernel_entry.asm` is not part of the boot sector.
+- `drivers` - Hardware drivers.
+- `kernel` All kernel core code.
+  - `kernel/init` OS initialization code
+- `libc` C standard library functions. All implemented functions are compliant to the specification (I hope). Some extra functions that are not part of the C standard are implemented.
 
 ## Current Features
 
@@ -235,7 +235,7 @@ The OS has a few device drivers, most of them are partial and only the necessary
 
 - **Screen** - standard text-mode VGA driver
 - **Serial** - serial port driver, only able to send data (no input or control mechanisms implemented), currently used only for logging
-- **Keyboard** - very partial, can only handle printable characters (not even modifiers like CTRL, SHIFT)
+- **Keyboard** - very partial, can only handle printable characters and SHIFT/CAPSLOCK
 - **PIC** - used to initialize the PIC
 
 ## What's Next?
