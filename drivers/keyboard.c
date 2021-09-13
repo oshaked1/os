@@ -22,44 +22,86 @@ const char keys_caps[NUM_KEYS] = "\0\e!@#$%^&*()_+\b\0QWERTYUIOP{}\n\0ASDFGHJKL:
 bool shift_pressed = FALSE;
 bool caps_lock = FALSE;
 
+// many key presses send the scan code 0xe0 before sending a second scan code,
+// thus it acts as a modifier
+bool modify = FALSE;
+
 void handle_keyboard_input()
 {
     // read the scan code from the keyboard I/O port
     uint8 scan_code = inb(KEYBOARD_DATA);
 
-    // check what to to with it
-    switch (scan_code)
+    // handle modifier key
+    if (scan_code == MODIFIER)
     {
-        // shift pressed
-        case LSHIFT_P:
-        case RSHIFT_P:
-            shift_pressed = TRUE;
-            break;
-        
-        // shift released
-        case LSHIFT_R:
-        case RSHIFT_R:
-            shift_pressed = FALSE;
-            break;
-        
-        // caps lock pressed - just invert the current state
-        case CAPSLOCK_P:
-            caps_lock = !caps_lock;
-            break;
-        
-        // not a special key, check if printable and if so print
-        default:
+        modify = TRUE;
+        return;
+    }
+
+    if (!modify)
+    {
+        switch (scan_code)
         {
-            if (scan_code > 0 && scan_code < NUM_KEYS)
+            // shift pressed
+            case LSHIFT_P:
+            case RSHIFT_P:
+                shift_pressed = TRUE;
+                break;
+            
+            // shift released
+            case LSHIFT_R:
+            case RSHIFT_R:
+                shift_pressed = FALSE;
+                break;
+            
+            // caps lock pressed - just invert the current state
+            case CAPSLOCK_P:
+                caps_lock = !caps_lock;
+                break;
+            
+            // not a special key, check if printable and if so print
+            default:
             {
-                // check which keyset to use
-                const char *keyset = (caps_lock ^ shift_pressed)? keys_caps: keys;
-                
-                // make sure the character is supposed to be printed
-                if (keyset[scan_code] != 0)
-                    kputchar(keyset[scan_code]);
+                if (scan_code > 0 && scan_code < NUM_KEYS)
+                {
+                    // check which keyset to use
+                    const char *keyset = (caps_lock ^ shift_pressed)? keys_caps: keys;
+                    
+                    // make sure the character is supposed to be printed
+                    if (keyset[scan_code] != 0)
+                        kputchar(keyset[scan_code]);
+                }
+                break;
             }
-            break;
         }
     }
+
+    else
+    {
+        switch (scan_code)
+        {
+            case CURSOR_LEFT_P:
+                cursor_left();
+                break;
+            
+            case CURSOR_RIGHT_P:
+                cursor_right();
+                break;
+            
+            case CURSOR_UP_P:
+                cursor_up();
+                break;
+            
+            case CURSOR_DOWN_P:
+                cursor_down();
+                break;
+            
+            default:
+                break;
+        }
+    }
+
+    // unset modifier
+    if (scan_code != MODIFIER)
+        modify = FALSE;
 }

@@ -151,9 +151,14 @@ uint kputchar_color(uchar c, uchar color)
         ushort *buffer = (ushort*)FRAME_BUFFER;
         buffer[cursor_pos] = value;
 
+        // increment cursor position and scroll the screen if it is out of bounds
         cursor_pos++;
+        if (GET_ROW(cursor_pos) >= FRAME_BUFFER_ROWS)
+        {
+            scroll();
+            cursor_pos = LAST_ROW_POS;
+        }
 
-        // increment cursor position
         set_cursor_pos(cursor_pos);
     }
 
@@ -246,10 +251,68 @@ void kcls()
     // clear all rows
     int row;
     for (row = 0; row < FRAME_BUFFER_ROWS; row++)
-    {
         clear_row(row);
-    }
 
     // set cursor to the beginning of the first row
     set_cursor_pos(GET_ROW_POS(0));
+}
+
+/**
+ * @brief Initialize the screen. After BIOS runs, all "empty" cells in the screen buffer are actually spaces.
+ * This is a problem because arrow key handling assumes empty cells (that sould not be moved over) are null bytes.
+ * Thus we need to empty all these cells.
+ * 
+ */
+void init_screen()
+{
+    // clear all rows from the row the cursor is currently on
+    uint cursor_pos = get_cursor_pos();
+    int row;
+    for (row = GET_ROW(cursor_pos); row < FRAME_BUFFER_ROWS; row++)
+        clear_row(row);
+}
+
+void cursor_left()
+{
+    int cursor_pos = get_cursor_pos();
+
+    // make sure we aren't going out of the screen bounds
+    if (cursor_pos - 1 < 0)
+        return;
+
+    // make sure we aren't returning to the previous row, or if we are, that it is allowed
+    if ((GET_ROW(cursor_pos) == GET_ROW(cursor_pos-1)) || locked_rows[GET_ROW(cursor_pos)-1] == FALSE)
+    {
+        cursor_pos -= 1;
+        set_cursor_pos(cursor_pos);
+    }
+}
+
+void cursor_right()
+{
+    uint cursor_pos = get_cursor_pos();
+
+    // make sure the location is within the bounds
+    if (GET_ROW(cursor_pos) >= FRAME_BUFFER_ROWS)
+        return;
+    
+    // make sure we aren't moving over an empty cell
+    byte *cell = CELL_PTR(cursor_pos);
+    if (cell[0] != 0)
+    {
+        cursor_pos++;
+        set_cursor_pos(cursor_pos);
+    }
+}
+
+void cursor_up()
+{
+    // do nothing for now
+    return;
+}
+
+void cursor_down()
+{
+    // do nothing for now
+    return;
 }

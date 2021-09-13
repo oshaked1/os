@@ -59,3 +59,8 @@ uint kprint_async(uchar *message);
 uint kprint_at(uchar *message, uint row, uint col);
 uint kprint_at_color(uchar *message, uint row, uint col, uchar color);
 void kcls();
+void init_screen();
+void cursor_left();
+void cursor_right();
+void cursor_up();
+void cursor_down();

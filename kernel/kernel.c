@@ -19,6 +19,9 @@ void kmain()
     set_log_dst_severity(DST_SCREEN, LOG_DEBUG);
 #endif
 
+    // initialize screen before printing anything
+    init_screen();
+
     log("SYS", 5, "INIT", "Kernel started");
 
     // setup the IDT
