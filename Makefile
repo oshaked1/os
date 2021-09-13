@@ -22,7 +22,7 @@ QEMUFLAGS = -chardev stdio,id=char0,logfile=serial.log,signal=off -serial charde
 # First rule is run by default
 os-image.bin: boot/bootsector.bin kernel.bin
 	cat $^ > $@
-	dd if=/dev/zero of=$@ bs=1 count=1 seek=1048575
+	dd if=/dev/zero of=$@ bs=1 count=1 seek=131071
 
 # '--oformat binary' deletes all symbols as a collateral, so we don't need
 # to 'strip' them manually on this case
@@ -40,6 +40,11 @@ run: os-image.bin
 debug: os-image.bin kernel.elf
 	${QEMU} ${QEMUFLAGS} -s -S -drive format=raw,file=$< &
 	${GDB} -ex "target remote localhost:1234" -ex "symbol-file kernel.elf"
+
+# Place release binaries in a dedicated directory
+release: os-image.bin kernel.elf
+	cp os-image.bin release/os-image.bin
+	cp kernel.elf release/kernel.elf
 
 # Generic rules for wildcards
 # To make an object, always compile from its .c

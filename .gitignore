@@ -13,3 +13,6 @@ serial.log
 *.id2
 *.nam
 *.til
+
+# don't ignore release files
+!release/*
