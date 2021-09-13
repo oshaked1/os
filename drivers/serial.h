@@ -1,4 +1,4 @@
-#include "../libc/types.h"
+#include "../lib/types.h"
 
 // baud rate definitions
 #define CLOCK_RATE   115200

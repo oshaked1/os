@@ -51,7 +51,7 @@ The current milestones that I set are divided into 4 major stages of development
 ###### Stage 4
 
 - Syscall POSIX compliance
-- Build environment with C standard libraries (like **libc**)
+- Runtime environment for third party applications
 - Functional Python port
 
 ## Setting up the Environment
@@ -217,7 +217,7 @@ To clean all build products, use `make clean`.
 - `drivers` - Hardware drivers.
 - `kernel` All kernel core code.
   - `kernel/init` OS initialization code
-- `libc` C standard library functions. All implemented functions are compliant to the specification (I hope). Some extra functions that are not part of the C standard are implemented.
+- `lib` C standard library functions. All implemented functions are compliant to the specification (I hope). Some extra functions that are not part of the C standard are implemented.
 
 ## Current Features
 

@@ -1,4 +1,4 @@
-#include "../libc/types.h"
+#include "../lib/types.h"
 #include "io.h"
 
 #define PIC1 0x20
@@ -33,7 +33,7 @@ void setup_pic();
 
 #ifndef _ACK_INT
 #define _ACK_INT
-static inline void acknowledge_interrupt(uint8 int_num)
+__attribute__((always_inline)) static inline void acknowledge_interrupt(uint8 int_num)
 {
     if (int_num >= PIC2_START_INT && int_num <= PIC2_END_INT)
     {

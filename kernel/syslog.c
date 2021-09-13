@@ -1,9 +1,9 @@
 #include "syslog.h"
 #include "../drivers/screen.h"
 #include "../drivers/serial.h"
-#include "../libc/stdlib.h"
-#include "../libc/stdio.h"
-#include "../libc/stdarg.h"
+#include "../lib/stdlib.h"
+#include "../lib/stdio.h"
+#include "../lib/stdarg.h"
 
 ushort dst_screen_severity  = LOG_NOTICE;
 ushort dst_serial_severity  = LOG_DEBUG;

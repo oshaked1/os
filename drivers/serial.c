@@ -1,6 +1,6 @@
 #include "serial.h"
 #include "io.h"
-#include "../libc/string.h"
+#include "../lib/string.h"
 
 void set_baud_rate(ushort com, uint baud)
 {

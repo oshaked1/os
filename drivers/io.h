@@ -1,4 +1,4 @@
-#include "../libc/types.h"
+#include "../lib/types.h"
 
 #ifndef _IO_FUNCS
 #define _IO_FUNCS

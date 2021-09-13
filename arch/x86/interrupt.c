@@ -2,11 +2,9 @@
 #include "idt.h"
 #include "../../drivers/pic.h"
 
-#include "../../kernel/syslog.h"
-
-struct idt_entry idt[255];
+struct idt_entry idt[256];
 struct idt_desc idt_desc;
-void *interrupt_handlers[255];
+void *interrupt_handlers[256];
 
 void register_interrupt(uint8 interrupt_number, void *handler, DPL dpl)
 {
@@ -15,8 +13,10 @@ void register_interrupt(uint8 interrupt_number, void *handler, DPL dpl)
     idt[interrupt_number].offset_low = (uint16)((size_t)handler & 0xffff);
 
     // present flag always set
-    uint8 flags = 0b10001110;
-    flags |= dpl;
+    uint8 flags = FLAGS_ALWAYS_ON | FLAGS_PRESENT;
+    // DPL is bits 5 and 6
+    flags |= (dpl << 5);
+    
     idt[interrupt_number].flags = flags;
     idt[interrupt_number].segment = KERNEL_CODE_SEGMENT;
 }

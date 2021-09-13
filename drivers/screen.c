@@ -1,6 +1,6 @@
 #include "screen.h"
 #include "io.h"
-#include "../libc/string.h"
+#include "../lib/string.h"
 
 // rows that are locked - backspace from the beginning of a row cannot go back into the row above if it is locked
 bool locked_rows[FRAME_BUFFER_ROWS];

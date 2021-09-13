@@ -1,4 +1,4 @@
-#include "../libc/types.h"
+#include "../lib/types.h"
 
 // memory mapped VGA video memory location
 #define FRAME_BUFFER 0xb8000

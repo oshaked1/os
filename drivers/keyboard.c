@@ -1,5 +1,5 @@
 #include "keyboard.h"
-#include "../libc/types.h"
+#include "../lib/types.h"
 #include "io.h"
 #include "screen.h"
 

@@ -1,6 +1,6 @@
 #include "isr.h"
-#include "../../libc/types.h"
-#include "../../libc/stdio.h"
+#include "../../lib/types.h"
+#include "../../lib/stdio.h"
 #include "../../arch/x86/interrupt.h"
 #include "../panic.h"
 

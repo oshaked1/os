@@ -1,5 +1,5 @@
 #include "pic.h"
-#include "../libc/types.h"
+#include "../lib/types.h"
 #include "io.h"
 
 void pic_remap(uint8 pic1_start_int, uint8 pic2_start_int)

@@ -1,4 +1,4 @@
-#include "../libc/types.h"
+#include "../lib/types.h"
 
 #define KEYBOARD_DATA 0x60
 

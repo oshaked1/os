@@ -1,4 +1,4 @@
-#include "../libc/types.h"
+#include "../lib/types.h"
 
 #ifndef _LOG_SEVERITY
 #define _LOG_SEVERITY
