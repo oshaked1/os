@@ -14,16 +14,17 @@ enter_protected_mode:
     cli
 
     ; load gdt from first argument
-    lgdt [ebp-0x8]
+    mov eax, [ebp-0x8]
+    lgdt [eax]
 
     ; enter 32-bit protected mode
     mov eax, cr0 ; cr0 contains protected mode flag
-    or eax, 1    ; set protected mode flag
+    or eax, 0x1    ; set protected mode flag
     mov cr0, eax
 
     ; far jump to flush CPU pipeline
     jmp CODE_SEGMENT:init_protected_mode
-
+    
 [bits 32]
 init_protected_mode:
     ; load data segment into segment registers

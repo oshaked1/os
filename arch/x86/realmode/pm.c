@@ -32,8 +32,7 @@ void init_gdt()
     gdt[2].base_high = 0x00;
 
     // setup gdt descriptor
-    //gdt_desc.size = sizeof(struct gdt_entry) * 3 - 1;
-    gdt_desc.size = 23;
+    gdt_desc.size = sizeof(struct gdt_entry) * 3 - 1;
     gdt_desc.offset = (uint32)gdt;
 }
 

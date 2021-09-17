@@ -6,9 +6,9 @@ REALMODE_HEADERS = $(wildcard arch/x86/realmode/*.h)
 OBJ = ${C_SOURCES:.c=.o}
 OBJ16 = ${C_REALMODE_SOURCES:.c=.o16}
 
-# Size of realmode code minus one (for seek)
+# Size of realmode binary file minus one (for seek)
 REALMODE_SIZE = 2047
-# Size of kernel code minus one (for seek)
+# Size of kernel binary file minus one (for seek)
 KERNEL_SIZE = 32767
 
 # Change this if your cross-compiler is somewhere else

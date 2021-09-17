@@ -4,6 +4,8 @@
 void realmode_main()
 {
     prints("Second stage bootloader started\r\n");
-    prints("Entering 32-bit protected mode\r\n");
-    switch_protected_mode(0x2000);
+
+    // jump to protected mode - no code at this address, but single-step debugging shows that this works
+    prints("Switching to protected mode\r\n");
+    switch_protected_mode(0x3000);
 }
