@@ -24,10 +24,6 @@ void kmain()
 
     log("SYS", 5, "INIT", "Kernel started");
 
-    // setup the IDT
-    setup_idt();
-    log("SYS", 6, "INIT", "IDT has been loaded");
-
     // install ISRs
     install_isrs();
     log("SYS", 6, "INIT", "ISRs have been installed");
@@ -39,4 +35,9 @@ void kmain()
     // setup PIC
     setup_pic();
     log("SYS", 6, "INIT", "PIC has been remapped");
+
+    // setup the IDT
+    setup_idt();
+    log("SYS", 6, "INIT", "IDT has been loaded");
+
 }
