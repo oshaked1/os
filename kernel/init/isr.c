@@ -20,7 +20,15 @@ void general_protection_fault(interrupt_info info)
     kernel_panic(str);
 }
 
+void double_fault(interrupt_info info)
+{
+    char str[100];
+    snprintf(str, 100, "a double fault has occurred at address 0x%x with error code 0x%x", info.eip, info.error_code);
+    kernel_panic(str);
+}
+
 void install_isrs()
 {
+    register_interrupt_handler(8,  double_fault);
     register_interrupt_handler(13, general_protection_fault);
 }
