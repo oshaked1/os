@@ -261,3 +261,18 @@ Output from real mode services will be written to memory at a location given as 
 ##### Kernel memory management
 
 The kernel cannot perform some more advanced tasks without dynamic memory allocation. A kernel heap needs to be implemented, along with memory management functions such as malloc and friends.
+
+## Read List & Technical References
+
+The following are the articles, books and technical references that I used or plan to use.
+
+- *[Writing a Simple Operating System — from Scratch](https://www.cs.bham.ac.uk/~exr/lectures/opsys/10_11/lectures/os-dev.pdf)* - A great introduction to the world of OS development. It's not finished (and probably never will be), but it currently provides a very in depth yet interesting guide to writing a simple bootloader and launching a kernel written in C.
+- *[Roll your own toy UNIX-clone OS](http://www.jamesmolloy.co.uk/tutorial_html/)* - A great guide to understanding and implementing some of the core features of an OS kernel. It has concise explanations and many code examples.
+- *[os-tutorial](https://github.com/cfenollosa/os-tutorial)* - A Github repository that serves as a tutorial for building an OS. It has 24 lessons, each featuring a README with an explanation, and complete code of the example OS so far. It is very much a compilation and refactor of the 2 previous sources.
+- *[The little book about OS development](https://littleosbook.github.io/)* - Another great guide to building an operating system. It covers many of the same topics as *Roll your own UNIX-clone OS*, but does so differently and is not based on it. It focuses more on theory than on code examples.
+- *[Many But Finite](https://manybutfinite.com/archives/)* - A blog with excellent posts about many operating system concepts. I very much recommend reading all posts (except the occasional off-topic post), from oldest to newest.
+- *[OSDev Wiki](https://wiki.osdev.org/Expanded_Main_Page)* - The bible of OS development. It contains an abundance of articles on many subjects. It is very technical in nature, and is not very friendly at first, especially if you do not know the theory behind the topic you're reading on. It also has a forum where veteran OS developers answer questions.
+- *[C Standard Library Reference](https://www.tutorialspoint.com/c_standard_library/index.htm)* - A reference for C standard library functions.
+- *[Linux Kernel Source](https://github.com/torvalds/linux)* - a real OS source can be a very useful asset for understanding how OS features are implemented.
+- *[Linux Kernel v1.0 Source](https://mirrors.edge.kernel.org/pub/linux/kernel/v1.0/)* - First version of the Linux kernel. There is **significantly** less code than the newest version, and it is much more concise. Often using the newest version as a reference reveals bloated, hard to comprehend code because it has so much compatibility considerations and extra features. This early release code is usually straight to the point (and much easier to navigate).
+- *[Understanding the Linux Kernel](https://doc.lagout.org/operating%20system%20/linux/Understanding%20Linux%20Kernel.pdf)* - A book that covers many aspects of the Linux kernel (as of version 2.6). I haven't had a chance to use it yet, but it seems like it could provide insights on how to implement many kernel functions.
