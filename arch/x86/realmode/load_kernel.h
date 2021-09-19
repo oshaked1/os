@@ -1,0 +1,7 @@
+#define REALMODE_SECTORS 8
+
+#define KERNEL_LOAD_ADDRESS 0x10000
+#define KERNEL_SIZE 32768
+#define KERNEL_SECTORS (KERNEL_SIZE / 512)
+
+void load_kernel();

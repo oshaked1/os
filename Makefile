@@ -7,7 +7,7 @@ OBJ = ${C_SOURCES:.c=.o}
 OBJ16 = ${C_REALMODE_SOURCES:.c=.o16}
 
 # Size of realmode binary file minus one (for seek)
-REALMODE_SIZE = 2047
+REALMODE_SIZE = 4095
 # Size of kernel binary file minus one (for seek)
 KERNEL_SIZE = 32767
 
@@ -34,7 +34,7 @@ os-image.bin: boot/bootsector.bin realmode.bin kernel.bin
 # '--oformat binary' deletes all symbols as a collateral, so we don't need
 # to 'strip' them manually on this case
 kernel.bin: boot/kernel_entry.o ${OBJ}
-	${LD} -o $@ -Ttext 0x2000 $^ --oformat binary
+	${LD} -o $@ -Ttext 0x10000 $^ --oformat binary
 	dd if=/dev/zero of=$@ bs=1 count=1 seek=${KERNEL_SIZE}
 
 # Used for debugging purposes

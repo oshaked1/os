@@ -1,6 +1,21 @@
 #include "print.h"
 
 /**
+ * @brief Print a character to the screen
+ * 
+ * @param c The character to print
+ */
+void printc(char c)
+{
+    // ah = 0x0e - teletype mode
+    asm volatile ("mov $0x0e, %ah");
+    // al - character to print
+    asm volatile ("mov %0, %%al" :: "r"(c));
+    // BIOS int 10h - video services
+    asm volatile ("int $0x10");
+}
+
+/**
  * @brief Print a string to the screen
  * 
  * @param str The string to print

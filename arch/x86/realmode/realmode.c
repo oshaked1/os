@@ -1,11 +1,12 @@
 #include "print.h"
 #include "pm.h"
+#include "load_kernel.h"
+#include "types.h"
 
 void realmode_main()
 {
-    prints("Second stage bootloader started\r\n");
+    prints("%BOOT-5-BOOTLDR: Second stage bootloader started\r\n");
 
-    // jump to protected mode - no code at this address, but single-step debugging shows that this works
-    prints("Switching to protected mode\r\n");
-    switch_protected_mode(0x3000);
+    // load kernel into memory
+    load_kernel();
 }

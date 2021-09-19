@@ -28,19 +28,20 @@ disk_load:
 
 
 disk_error:
+    ; print error code - see http://stanislavs.org/helppc/int_13-1.html
     mov bx, DISK_ERROR
     call print
-    call print_nl
+    mov dx, ERR_CODE
+    call print
     mov dh, ah ; ah = error code, dl = disk drive that dropped the error
-    call print_hex ; check out the code at http://stanislavs.org/helppc/int_13-1.html
     jmp disk_loop
 
 sectors_error:
-    mov bx, SECTORS_ERROR
+    mov bx, DISK_ERROR
     call print
 
 disk_loop:
     jmp $
 
-DISK_ERROR: db "Disk read error, cannot load kernel", 0
-SECTORS_ERROR: db "Incorrect number of sectors read, cannot load kernel", 0
+DISK_ERROR: db "%BOOT-1-DISKERR: Disk read error while loading 2nd stage bootloader", 0
+ERR_CODE: db ": ", 0

@@ -43,4 +43,4 @@ end:
     ret
 
 HEX_OUT:
-    db '0x0000',0 ; reserve memory for our new string
+    db '0x0000',0 ; reserve memory for hex string

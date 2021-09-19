@@ -227,9 +227,7 @@ uint kprint_async(uchar *message)
     uint col = GET_COL(cursor_pos);
 
     // input the requested message
-    kprint(message);
-
-    cursor_pos = get_cursor_pos();
+    cursor_pos = kprint(message);
 
     // copy saved row contents to the new empty row if needed
     if (!row_empty)
@@ -239,14 +237,17 @@ uint kprint_async(uchar *message)
     }
 
     // move cursor to the same column it was at
-    set_cursor_pos(cursor_pos + col);
+    cursor_pos += col;
+    set_cursor_pos(cursor_pos);
+
+    return cursor_pos;
 }
 
 /**
  * @brief Clear the screen by setting the character of all cells to \x00 and the color to white on black
  * 
  */
-void kcls()
+uint kcls()
 {
     // clear all rows
     int row;
@@ -254,7 +255,9 @@ void kcls()
         clear_row(row);
 
     // set cursor to the beginning of the first row
-    set_cursor_pos(GET_ROW_POS(0));
+    uint cursor_pos = GET_ROW_POS(0);
+    set_cursor_pos(cursor_pos);
+    return cursor_pos;
 }
 
 /**
@@ -263,22 +266,27 @@ void kcls()
  * Thus we need to empty all these cells.
  * 
  */
-void init_screen()
+uint init_screen()
 {
     // clear all rows from the row the cursor is currently on
     uint cursor_pos = get_cursor_pos();
     int row;
     for (row = GET_ROW(cursor_pos); row < FRAME_BUFFER_ROWS; row++)
         clear_row(row);
+    
+    // set cursor position to beginning of the current row
+    cursor_pos = GET_ROW_POS(GET_ROW(cursor_pos));
+    set_cursor_pos(cursor_pos);
+    return cursor_pos;
 }
 
-void cursor_left()
+uint cursor_left()
 {
     int cursor_pos = get_cursor_pos();
 
     // make sure we aren't going out of the screen bounds
     if (cursor_pos - 1 < 0)
-        return;
+        return cursor_pos;
 
     // make sure we aren't returning to the previous row, or if we are, that it is allowed
     if ((GET_ROW(cursor_pos) == GET_ROW(cursor_pos-1)) || locked_rows[GET_ROW(cursor_pos)-1] == FALSE)
@@ -286,15 +294,16 @@ void cursor_left()
         cursor_pos -= 1;
         set_cursor_pos(cursor_pos);
     }
+    return cursor_pos;
 }
 
-void cursor_right()
+uint cursor_right()
 {
     uint cursor_pos = get_cursor_pos();
 
     // make sure the location is within the bounds
     if (GET_ROW(cursor_pos) >= FRAME_BUFFER_ROWS)
-        return;
+        return cursor_pos;
     
     // make sure we aren't moving over an empty cell
     byte *cell = CELL_PTR(cursor_pos);
@@ -303,16 +312,19 @@ void cursor_right()
         cursor_pos++;
         set_cursor_pos(cursor_pos);
     }
+    return cursor_pos;
 }
 
-void cursor_up()
+uint cursor_up()
 {
     // do nothing for now
-    return;
+    uint cursor_pos = get_cursor_pos();
+    return cursor_pos;
 }
 
-void cursor_down()
+uint cursor_down()
 {
     // do nothing for now
-    return;
+    uint cursor_pos = get_cursor_pos();
+    return cursor_pos;
 }
