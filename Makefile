@@ -6,10 +6,13 @@ REALMODE_HEADERS = $(wildcard arch/x86/realmode/*.h)
 OBJ = ${C_SOURCES:.c=.o}
 OBJ16 = ${C_REALMODE_SOURCES:.c=.o16}
 
-# Size of realmode binary file minus one (for seek)
-REALMODE_SIZE = 4095
-# Size of kernel binary file minus one (for seek)
-KERNEL_SIZE = 32767
+# Size of binary files after padding
+REALMODE_SIZE = 4096
+KERNEL_SIZE = 32768
+
+# Binary files loading addresses
+REALMODE_LOAD_ADDRESS = 0x1000
+KERNEL_LOAD_ADDRESS = 0x10000
 
 # Change this if your cross-compiler is somewhere else
 CC = /usr/local/i386elfgcc/bin/i386-elf-gcc
@@ -17,14 +20,19 @@ LD = /usr/local/i386elfgcc/bin/i386-elf-ld
 GDB = /usr/local/i386elfgcc/bin/i386-elf-gdb
 CC16 = /usr/local/ia16elfgcc/bin/ia16-elf-gcc
 LD16 = /usr/local/ia16elfgcc/bin/ia16-elf-ld
+
 # -g: Use debugging symbols in gcc
 CFLAGS = -g
+
+# Preprocessor definitions
+CC16_DEFS = -D KERNEL_LOAD_ADDRESS=${KERNEL_LOAD_ADDRESS} -D REALMODE_SECTORS=${shell expr ${REALMODE_SIZE} / 512} -D KERNEL_SIZE=${KERNEL_SIZE}
+NASM_DEFS = -D REALMODE_LOAD_ADDRESS=${REALMODE_LOAD_ADDRESS} -D REALMODE_SECTORS=${shell expr ${REALMODE_SIZE} / 512}
 
 # QEMU
 # My environment is WSL1 which has no graphic capabilites.
 # We use the Windows executable from within WSL (see https://docs.microsoft.com/en-us/windows/wsl/interop)
 QEMU = qemu-system-i386.exe
-# redirect serial output to stdout and a logfile
+# Redirect serial output to stdout and a logfile
 QEMUFLAGS = -chardev stdio,id=char0,logfile=serial.log,signal=off -serial chardev:char0 -no-reboot
 
 # First rule is run by default
@@ -32,21 +40,21 @@ os-image.bin: boot/bootsector.bin realmode.bin kernel.bin
 	cat $^ > $@
 
 # '--oformat binary' deletes all symbols as a collateral, so we don't need
-# to 'strip' them manually on this case
+# to 'strip' them manually
 kernel.bin: boot/kernel_entry.o ${OBJ}
-	${LD} -o $@ -Ttext 0x10000 $^ --oformat binary
-	dd if=/dev/zero of=$@ bs=1 count=1 seek=${KERNEL_SIZE}
+	${LD} -o $@ -Ttext ${KERNEL_LOAD_ADDRESS} $^ --oformat binary
+	dd if=/dev/zero of=$@ bs=1 count=1 seek=${shell expr ${KERNEL_SIZE} - 1}
 
 # Used for debugging purposes
 kernel.elf: boot/kernel_entry.o ${OBJ}
-	${LD} -o $@ -Ttext 0x2000 $^
+	${LD} -o $@ -Ttext ${KERNEL_LOAD_ADDRESS} $^
 
 realmode.bin: arch/x86/realmode/realmode_entry.o ${OBJ16}
-	${LD16} -o $@ -Ttext 0x1000 $^ --oformat binary
-	dd if=/dev/zero of=$@ bs=1 count=1 seek=${REALMODE_SIZE}
+	${LD16} -o $@ -Ttext ${REALMODE_LOAD_ADDRESS} $^ --oformat binary
+	dd if=/dev/zero of=$@ bs=1 count=1 seek=${shell expr ${REALMODE_SIZE} - 1}
 
 realmode.elf: arch/x86/realmode/realmode_entry.o ${OBJ16}
-	${LD16} -o $@ -Ttext 0x1000 $^
+	${LD16} -o $@ -Ttext ${REALMODE_LOAD_ADDRESS} $^
 
 run: os-image.bin
 	${QEMU} ${QEMUFLAGS} -drive format=raw,file=$<
@@ -67,13 +75,13 @@ release: os-image.bin kernel.elf
 	${CC} ${CFLAGS} -ffreestanding -c $< -o $@
 
 %.o16: %.c ${REALMODE_HEADERS}
-	${CC16} ${CFLAGS} -ffreestanding -c $< -o $@
+	${CC16} ${CC16_DEFS} -ffreestanding -c $< -o $@
 
 %.o: %.asm
 	nasm $< -f elf -o $@
 
 %.bin: %.asm
-	nasm $< -f bin -o $@
+	nasm ${NASM_DEFS} $< -f bin -o $@
 
 clean:
 	rm -rf *.bin *.dis *.o os-image.bin *.elf

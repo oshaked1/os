@@ -1,7 +1,5 @@
 #include "pm.h"
 
-#include "print.h"
-
 struct gdt_entry gdt[3]; // GDT with 3 entries: first is null, second is code segment, third is data segment
 struct gdt_desc gdt_desc; // GDT descriptor
 
