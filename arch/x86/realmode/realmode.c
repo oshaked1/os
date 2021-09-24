@@ -1,7 +1,5 @@
 #include "print.h"
-#include "pm.h"
 #include "load_kernel.h"
-#include "types.h"
 
 void realmode_main()
 {

@@ -221,7 +221,9 @@ To clean all build products, use `make clean`.
 
 ## Current Features
 
-The OS currently has a minimal boot loader. All it does is load the kernel into memory, load a minimal GDT, enter 32 bit protected mode and launch the kernel. It is a single stage boot loader and fits entirely into the boot sector of the disk.
+The OS currently has a 2-stage boot loader. The first stage simply loads the second stage from the disk into memory and transfers control to it.
+
+The second stage, written mostly in C, loads the entire kernel into memory, enters 32-bit protected mode using a minimal GDT, and transfers control to the kernel.
 
 The kernel currently does a few initialization tasks:
 
@@ -233,20 +235,14 @@ The kernel also features a logging mechanism based on Syslog principles (and hea
 
 The OS has a few device drivers, most of them are partial and only the necessary features are implemented:
 
-- **Screen** - standard text-mode VGA driver
+- **Screen** - standard text-mode VGA driver with limited support for shell-like control (moving the cursor, locking rows, scrolling the screen)
 - **Serial** - serial port driver, only able to send data (no input or control mechanisms implemented), currently used only for logging
-- **Keyboard** - very partial, can only handle printable characters and SHIFT/CAPSLOCK
+- **Keyboard** - very partial, can only handle printable characters, SHIFT/CAPSLOCK and arrow keys
 - **PIC** - used to initialize the PIC
 
 ## What's Next?
 
 The following are the next things that need to be worked on.
-
-##### More robust boot loader
-
-One major problem I currently have, is that the entire kernel is loaded from the 16-bit real mode boot loader, which has only 1MB of addressable memory. This means that the theoretical maximum kernel size I can load is 1MB (in practice significantly less, more like ~500KB). While this sounds like enough, there is an additional limitation - in 16-bit real mode, only 0xFFFF bytes of memory (64KB) can be accessed at once, without using complex segment register manipulations (which allow accessing the full 1MB address space, 64KB at a time). The current kernel size is 9KB, and growing. This means that very soon, a more sophisticated kernel loading mechanism will be needed. Such a mechanism will probably not fit into the 512 byte boot sector, which means we will need a 2-stage boot loader.
-
-The 1st stage (which is contained in the boot sector) will load the 2nd stage (which will be larger) into memory, initialize a stack for it, and pass control to it. The 2nd stage will be written in C (and compiled to 16-bit code using a fork of GCC), and along with some more complex initialization tasks (like obtaining a full memory map), will load the actual kernel into memory, and pass control to it.
 
 ##### 16-bit real mode kernel services
 
@@ -260,7 +256,7 @@ Output from real mode services will be written to memory at a location given as 
 
 ##### Kernel memory management
 
-The kernel cannot perform some more advanced tasks without dynamic memory allocation. A kernel heap needs to be implemented, along with memory management functions such as malloc and friends.
+The kernel cannot perform some more advanced tasks without dynamic memory allocation. A kernel heap needs to be implemented, along with memory management functions such as malloc and friends. Before that, a detailed memory map needs to be obtained (using real mode BIOS services) so that we can start managing the physical memory.
 
 ## Read List & Technical References
 

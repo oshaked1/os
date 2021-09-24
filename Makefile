@@ -6,13 +6,18 @@ REALMODE_HEADERS = $(wildcard arch/x86/realmode/*.h)
 OBJ = ${C_SOURCES:.c=.o}
 OBJ16 = ${C_REALMODE_SOURCES:.c=.o16}
 
-# Size of binary files after padding
+# Size of binary files after padding - MUST BE DIVISIBLE BY 512 (sector size)
 REALMODE_SIZE = 4096
 KERNEL_SIZE = 32768
 
-# Binary files loading addresses
+# Binary file loading addresses
 REALMODE_LOAD_ADDRESS = 0x1000
-KERNEL_LOAD_ADDRESS = 0x10000
+DISK_LOAD_ADDRESS     = 0x10000
+KERNEL_LOAD_ADDRESS   = 0x100000
+
+# Realmode and Protected mode stacks
+REALMODE_STACK = 0x9000
+PROTECTED_MODE_STACK = 0x70000
 
 # Change this if your cross-compiler is somewhere else
 CC = /usr/local/i386elfgcc/bin/i386-elf-gcc
@@ -25,8 +30,8 @@ LD16 = /usr/local/ia16elfgcc/bin/ia16-elf-ld
 CFLAGS = -g
 
 # Preprocessor definitions
-CC16_DEFS = -D KERNEL_LOAD_ADDRESS=${KERNEL_LOAD_ADDRESS} -D REALMODE_SECTORS=${shell expr ${REALMODE_SIZE} / 512} -D KERNEL_SIZE=${KERNEL_SIZE}
-NASM_DEFS = -D REALMODE_LOAD_ADDRESS=${REALMODE_LOAD_ADDRESS} -D REALMODE_SECTORS=${shell expr ${REALMODE_SIZE} / 512}
+CC16_DEFS = -D REALMODE_SECTORS=${shell expr ${REALMODE_SIZE} / 512} -D KERNEL_SIZE=${KERNEL_SIZE} -D DISK_LOAD_ADDRESS=${DISK_LOAD_ADDRESS} -D KERNEL_LOAD_ADDRESS=${KERNEL_LOAD_ADDRESS}
+NASM_DEFS = -D REALMODE_LOAD_ADDRESS=${REALMODE_LOAD_ADDRESS} -D REALMODE_SECTORS=${shell expr ${REALMODE_SIZE} / 512} -D DISK_LOAD_ADDRESS=${DISK_LOAD_ADDRESS} -D KERNEL_LOAD_ADDRESS=${KERNEL_LOAD_ADDRESS} -D REALMODE_STACK=${REALMODE_STACK} -D PROTECTED_MODE_STACK=${PROTECTED_MODE_STACK}
 
 # QEMU
 # My environment is WSL1 which has no graphic capabilites.
@@ -65,9 +70,10 @@ debug: os-image.bin kernel.elf realmode.elf
 	${GDB} -ex "target remote localhost:1234" -ex "symbol-file kernel.elf"
 
 # Place release binaries in a dedicated directory
-release: os-image.bin kernel.elf
+release: os-image.bin kernel.elf realmode.elf
 	cp os-image.bin release/os-image.bin
 	cp kernel.elf release/kernel.elf
+	cp realmode.elf release/realmode.elf
 
 # Generic rules for wildcards
 # To make an object, always compile from its .c
@@ -78,7 +84,7 @@ release: os-image.bin kernel.elf
 	${CC16} ${CC16_DEFS} -ffreestanding -c $< -o $@
 
 %.o: %.asm
-	nasm $< -f elf -o $@
+	nasm ${NASM_DEFS} $< -f elf -o $@
 
 %.bin: %.asm
 	nasm ${NASM_DEFS} $< -f bin -o $@

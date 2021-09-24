@@ -1,6 +1,6 @@
 #include "pm.h"
 
-struct gdt_entry gdt[3]; // GDT with 3 entries: first is null, second is code segment, third is data segment
+struct gdt_entry gdt[3];  // GDT with 3 entries: first is null, second is code segment, third is data segment
 struct gdt_desc gdt_desc; // GDT descriptor
 
 void init_gdt()
@@ -31,7 +31,7 @@ void init_gdt()
 
     // setup gdt descriptor
     gdt_desc.size = sizeof(struct gdt_entry) * 3 - 1;
-    gdt_desc.offset = (uint16)&gdt;
+    gdt_desc.offset = (uint16)gdt;
 }
 
 void switch_protected_mode(uint32 jump_target)

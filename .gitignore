@@ -1,6 +1,7 @@
 # binaries
 *.bin
 *.o
+*.o16
 *.elf
 
 # logs

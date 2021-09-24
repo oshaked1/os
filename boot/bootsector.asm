@@ -4,7 +4,7 @@ begin:
     mov [BOOT_DRIVE], dl ; BIOS sets the boot drive in 'dl' - store it in memory for later
 
     ; initialize real mode stack
-    mov bp, 0x9000
+    mov bp, REALMODE_STACK
     mov sp, bp
 
     ; print bootloader start message

@@ -3,15 +3,17 @@
 // Please refer to https://wiki.osdev.org/Global_Descriptor_Table for deatiled GDT info
 
 // access flags
-#define PRESENT 0b10000000
-#define PL0 0
+#define PRESENT   0b10000000
+#define PL0       0
 #define DESCRIPTOR_TYPE_NORMAL 0b00010000
 #define TYPE_CODE 0b00001010
 #define TYPE_DATA 0b00000010
 
 // granularity flags
-#define GRANULARITY_PAGE 0b10000000
-#define OPERAND_SIZE_32  0b01000000
+#define GRANULARITY_PAGE   0b10000000
+#define GRANULARITY_BYTE   0b00000000
+#define OPERAND_SIZE_32    0b01000000
+#define OPERAND_SIZE_16    0b00000000
 #define SEGMENT_LENGTH_MAX 0b00001111
 
 struct gdt_entry
