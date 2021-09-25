@@ -134,7 +134,8 @@ __attribute__((naked)) void interrupt_handler_47()  {GENERIC_HANDLER_NOERR(47);}
 __attribute__((naked)) void interrupt_handler_48()  {GENERIC_HANDLER_NOERR(48);}
 
 // software interrupts
-__attribute__((naked)) void interrupt_handler_50()  {GENERIC_HANDLER_NOERR(50);} // test interrupt
+__attribute__((naked)) void interrupt_handler_50()  {GENERIC_HANDLER_NOERR(50);}  // test interrupt
+__attribute__((naked)) void interrupt_handler_129() {GENERIC_HANDLER_NOERR(129);} // 0x81 - real mode services
 
 
 void setup_idt()
@@ -194,6 +195,7 @@ void setup_idt()
 
     // register software interrupts
     register_interrupt(50,  interrupt_handler_50,  PL0);
+    register_interrupt(129, interrupt_handler_129, PL0);
 
     // initialize IDT description
     idt_desc.base = (uint32)&idt;

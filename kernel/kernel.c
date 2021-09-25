@@ -9,10 +9,6 @@
 #include "init/irq.h"
 #include "../drivers/pic.h"
 
-#include "../arch/x86/realmode_services.h"
-
-#define __DEBUG__
-
 void kmain()
 {
 #ifdef __DEBUG__
@@ -40,7 +36,14 @@ void kmain()
     setup_idt();
     log("SYS", 6, "INIT", "IDT has been loaded");
 
-    // test real mode service call
-    realmode_service_call();
+    // test real mode services
+    debug("Performing int 0x%x", IRQ_REALMODE_SERVICES);
+    asm volatile ("mov $5, %eax"); // service 5
+    asm volatile ("mov $8, %ebx"); // function 8
+    asm volatile ("mov $0x1234abcd, %esi"); // input buffer 0x1234abcd
+    asm volatile ("mov $0x2345bcde, %edi"); // output buffer 0x2345bcde
 
+    asm volatile ("int %0" :: "i"(IRQ_REALMODE_SERVICES));
+
+    debug("Back from IRQ");
 }

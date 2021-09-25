@@ -13,14 +13,18 @@ void realmode_main()
 
 void service_call_main(struct service_packet pkt)
 {
+#ifdef __REALMODE_DEBUG__
     prints("Entered service call main!\r\n");
-    prints("arg1 is 0x");
-    printh(pkt.arg1);
-    prints("\r\narg2 is 0x");
-    printh(pkt.arg2);
-    prints("\r\narg3 is '");
-    printc(pkt.arg3);
-    prints("'\r\n");
+    prints("service is 0x");
+    printh(pkt.service);
+    prints("\r\nfunction is 0x");
+    printh(pkt.function);
+    prints("\r\nsource buffer is 0x");
+    printh(pkt.input_buffer);
+    prints("\r\ndestination buffer is 0x");
+    printh(pkt.output_buffer);
+    prints("\r\n");
+#endif
 
     // return to protected mode with service_call_return as jump target
     switch_protected_mode(SERVICE_RETURN_ADDRESS);

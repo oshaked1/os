@@ -7,10 +7,10 @@
 
 #define SERVICE_RETURN_ADDRESS (REALMODE_LOAD_ADDRESS + 0x200)
 
-// test service packet - fields will be different later on
 struct service_packet
 {
-    uint32 arg1;
-    uint16 arg2;
-    uchar arg3;
+    uint32 service;
+    uint32 function;
+    uint32 input_buffer;
+    uint32 output_buffer;
 } __attribute__((packed));

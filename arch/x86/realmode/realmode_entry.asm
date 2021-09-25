@@ -1,6 +1,6 @@
 CODE_SEGMENT equ 8
 DATA_SEGMENT equ 16
-SERVICE_REQUEST_PACKET_SIZE equ 7
+SERVICE_REQUEST_PACKET_SIZE equ 16
 
 [bits 16]
 [extern realmode_main]

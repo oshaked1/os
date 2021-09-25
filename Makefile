@@ -6,6 +6,10 @@ REALMODE_HEADERS = $(wildcard arch/x86/realmode/*.h)
 OBJ = ${C_SOURCES:.c=.o}
 OBJ16 = ${C_REALMODE_SOURCES:.c=.o16}
 
+# Debug settings
+DEBUG          = TRUE  # extra debugging messages (can be very verbose)
+REALMODE_DEBUG = TRUE  # print real mode service messages to screen
+
 # Size of binary files after padding - MUST BE DIVISIBLE BY 512 (sector size)
 REALMODE_SIZE = 4096
 KERNEL_SIZE = 32768
@@ -29,8 +33,19 @@ LD16 = /usr/local/ia16elfgcc/bin/ia16-elf-ld
 # -g: Use debugging symbols in gcc
 CFLAGS = -g
 
-# Preprocessor definitions
-CC16_DEFS = -D REALMODE_SECTORS=${shell expr ${REALMODE_SIZE} / 512} -D KERNEL_SIZE=${KERNEL_SIZE} -D DISK_LOAD_ADDRESS=${DISK_LOAD_ADDRESS} -D KERNEL_LOAD_ADDRESS=${KERNEL_LOAD_ADDRESS} -D REALMODE_LOAD_ADDRESS=${REALMODE_LOAD_ADDRESS}
+### Preprocessor definitions
+
+# Debug definitions based on debug settings
+ifeq (${strip ${DEBUG}}, TRUE)
+DEBUG_DEFS = -D __DEBUG__
+endif
+ifeq (${strip ${REALMODE_DEBUG}}, TRUE)
+DEBUG_DEFS := ${DEBUG_DEFS} -D __REALMODE_DEBUG__
+endif
+
+# Full definition lists
+CC_DEFS = ${DEBUG_DEFS}
+CC16_DEFS = ${DEBUG_DEFS} -D REALMODE_SECTORS=${shell expr ${REALMODE_SIZE} / 512} -D KERNEL_SIZE=${KERNEL_SIZE} -D DISK_LOAD_ADDRESS=${DISK_LOAD_ADDRESS} -D KERNEL_LOAD_ADDRESS=${KERNEL_LOAD_ADDRESS} -D REALMODE_LOAD_ADDRESS=${REALMODE_LOAD_ADDRESS}
 NASM_DEFS = -D REALMODE_LOAD_ADDRESS=${REALMODE_LOAD_ADDRESS} -D REALMODE_SECTORS=${shell expr ${REALMODE_SIZE} / 512} -D DISK_LOAD_ADDRESS=${DISK_LOAD_ADDRESS} -D KERNEL_LOAD_ADDRESS=${KERNEL_LOAD_ADDRESS} -D REALMODE_STACK=${REALMODE_STACK} -D PROTECTED_MODE_STACK=${PROTECTED_MODE_STACK}
 
 # QEMU
@@ -79,7 +94,7 @@ release: os-image.bin kernel.elf realmode.elf
 # Generic rules for wildcards
 # To make an object, always compile from its .c
 %.o: %.c ${HEADERS}
-	${CC} ${CFLAGS} -ffreestanding -c $< -o $@
+	${CC} ${CFLAGS} ${CC_DEFS} -ffreestanding -c $< -o $@
 
 %.o16: %.c ${REALMODE_HEADERS}
 	${CC16} ${CC16_DEFS} -ffreestanding -c $< -o $@

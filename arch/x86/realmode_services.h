@@ -3,9 +3,10 @@
 
 struct realmode_service_packet
 {
-    uint32 arg1;
-    uint16 arg2;
-    uchar arg3;
+    uint32 service;       // EAX
+    uint32 function;      // EBX
+    uint32 input_buffer;  // ESI
+    uint32 output_buffer; // EDI
 } __attribute__((packed));
 
 extern void realmode_service_entry(struct idt_desc *kernel_idt, struct realmode_service_packet pkt);
