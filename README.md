@@ -20,7 +20,7 @@ What does "from scratch" mean? The following assumptions are made:
 
 Initially, I wanted to be special and make the OS on a RISC architecture, anything that is not the ultra-popular and overused x86. I tried to find information about OS development for ARM, PowerPC, and even RISC-V. Very quickly I realized that there are 2 very big issues with anything that is not x86:
 
-- There is barely any beginner-friendly information available (let alone tutorials)
+- There is hardly any beginner-friendly information available (let alone tutorials)
 - Many aspects of the execution environment are platform dependent and not standardized (or at least widely used)
 
 These problems made me realize that at least as a first OS project, I have to choose x86. Porting the OS to another platform later is always possible if I would really like too.

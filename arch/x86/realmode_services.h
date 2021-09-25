@@ -1,4 +1,5 @@
 #include "../../lib/types.h"
+#include "interrupt.h"
 
 struct realmode_service_packet
 {
@@ -7,5 +8,5 @@ struct realmode_service_packet
     uchar arg3;
 } __attribute__((packed));
 
-extern void realmode_service_entry(struct realmode_service_packet pkt);
+extern void realmode_service_entry(struct idt_desc *kernel_idt, struct realmode_service_packet pkt);
 void realmode_service_call();

@@ -16,7 +16,7 @@ DISK_LOAD_ADDRESS     = 0x10000
 KERNEL_LOAD_ADDRESS   = 0x100000
 
 # Realmode and Protected mode stacks
-REALMODE_STACK = 0x9000
+REALMODE_STACK       = 0x9000
 PROTECTED_MODE_STACK = 0x70000
 
 # Change this if your cross-compiler is somewhere else
@@ -30,14 +30,14 @@ LD16 = /usr/local/ia16elfgcc/bin/ia16-elf-ld
 CFLAGS = -g
 
 # Preprocessor definitions
-CC16_DEFS = -D REALMODE_SECTORS=${shell expr ${REALMODE_SIZE} / 512} -D KERNEL_SIZE=${KERNEL_SIZE} -D DISK_LOAD_ADDRESS=${DISK_LOAD_ADDRESS} -D KERNEL_LOAD_ADDRESS=${KERNEL_LOAD_ADDRESS}
+CC16_DEFS = -D REALMODE_SECTORS=${shell expr ${REALMODE_SIZE} / 512} -D KERNEL_SIZE=${KERNEL_SIZE} -D DISK_LOAD_ADDRESS=${DISK_LOAD_ADDRESS} -D KERNEL_LOAD_ADDRESS=${KERNEL_LOAD_ADDRESS} -D REALMODE_LOAD_ADDRESS=${REALMODE_LOAD_ADDRESS}
 NASM_DEFS = -D REALMODE_LOAD_ADDRESS=${REALMODE_LOAD_ADDRESS} -D REALMODE_SECTORS=${shell expr ${REALMODE_SIZE} / 512} -D DISK_LOAD_ADDRESS=${DISK_LOAD_ADDRESS} -D KERNEL_LOAD_ADDRESS=${KERNEL_LOAD_ADDRESS} -D REALMODE_STACK=${REALMODE_STACK} -D PROTECTED_MODE_STACK=${PROTECTED_MODE_STACK}
 
 # QEMU
 # My environment is WSL1 which has no graphic capabilites.
-# We use the Windows executable from within WSL (see https://docs.microsoft.com/en-us/windows/wsl/interop)
+# I use the Windows executable from within WSL (see https://docs.microsoft.com/en-us/windows/wsl/interop)
 QEMU = qemu-system-i386.exe
-# Redirect serial output to stdout and a logfile
+# Redirect serial output to stdout and a logfile, don't reboot (so triple faults don't create an infinite boot loop)
 QEMUFLAGS = -chardev stdio,id=char0,logfile=serial.log,signal=off -serial chardev:char0 -no-reboot
 
 # First rule is run by default
@@ -58,6 +58,7 @@ realmode.bin: arch/x86/realmode/realmode_entry.o ${OBJ16}
 	${LD16} -o $@ -Ttext ${REALMODE_LOAD_ADDRESS} $^ --oformat binary
 	dd if=/dev/zero of=$@ bs=1 count=1 seek=${shell expr ${REALMODE_SIZE} - 1}
 
+# Used for debugging purposes
 realmode.elf: arch/x86/realmode/realmode_entry.o ${OBJ16}
 	${LD16} -o $@ -Ttext ${REALMODE_LOAD_ADDRESS} $^
 

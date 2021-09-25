@@ -14,20 +14,28 @@ times 0x100 - ($-$$) db 0
 [extern service_call_main]
 ; This is the entry point for all real mode service calls.
 ; It is located at a static address so the kernel can jump here.
-; It receives a request packet as an argument.
-; Because it we are in 32-bit protected mode here, our stack is in a different
-; location that the one we'll be using in real mode.
+; It receives the address of the kernel IDT and a request packet as arguments.
+; Because we are in 32-bit protected mode here, our stack is in a different
+; location than the one we'll be using in real mode.
 ; So this entry function copies the request packet to the real mode stack location.
 ; Afterwards it transitions into real mode and jumps to the service call main function,
 ; which can access the request packet as an argument because it's on its stack already.
 service_call_entry:
+    ; store EBP and ESP for returning to the kernel
+    mov [saved_ebp], ebp
+    mov [saved_esp], esp
+
     mov ebp, esp
+
+    ; save kernel IDT address
+    mov eax, [ebp+0x4]
+    mov [saved_idt], eax
 
     ; make sure we are copying forward
     cld
 
     ; set ESI to packet struct address
-    lea esi, [ebp+0x4]
+    lea esi, [ebp+0x8]
 
     ; set EDI to argument location on real mode stack
     lea edi, [REALMODE_STACK+0x2]
@@ -42,6 +50,28 @@ service_call_entry:
     push service_call_main
     call enter_real_mode
     jmp $ ; should never execute
+
+; pad to 0x200 bytes after load address, to create static reuturn address for real mode service calls
+times 0x200 - ($-$$) db 0
+global service_call_return
+; This is the return address for real mode service calls after they have transitioned back into protected mode.
+; It restores the original EBP and ESP of the kernel stack, loads the kernel IDT, restores interrupts and performs a RET.
+service_call_return:
+    mov ebp, [saved_ebp]
+    mov esp, [saved_esp]
+
+    mov eax, [saved_idt]
+    lidt [eax]
+    sti
+
+    ret
+
+saved_ebp:
+    dd 0
+saved_esp:
+    dd 0
+saved_idt:
+    dd 0
 
 [bits 16]
 global enter_protected_mode
