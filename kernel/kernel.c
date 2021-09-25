@@ -9,7 +9,7 @@
 #include "init/irq.h"
 #include "../drivers/pic.h"
 
-#include "../drivers/keyboard.h"
+#include "../arch/x86/realmode_services.h"
 
 #define __DEBUG__
 
@@ -39,5 +39,8 @@ void kmain()
     // setup the IDT
     setup_idt();
     log("SYS", 6, "INIT", "IDT has been loaded");
+
+    // test real mode service call
+    realmode_service_call();
 
 }

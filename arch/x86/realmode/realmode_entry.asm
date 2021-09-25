@@ -1,12 +1,49 @@
 CODE_SEGMENT equ 8
 DATA_SEGMENT equ 16
+SERVICE_REQUEST_PACKET_SIZE equ 7
 
 [bits 16]
 [extern realmode_main]
-mov [BOOT_DRIVE], dl ; save boot drive in memory
-call realmode_main
-jmp $
+    mov [BOOT_DRIVE], dl ; save boot drive in memory
+    call realmode_main
+    jmp $
 
+; pad to 0x100 bytes after load address, to create static entry address for real mode service calls
+times 0x100 - ($-$$) db 0
+[bits 32]
+[extern service_call_main]
+; This is the entry point for all real mode service calls.
+; It is located at a static address so the kernel can jump here.
+; It receives a request packet as an argument.
+; Because it we are in 32-bit protected mode here, our stack is in a different
+; location that the one we'll be using in real mode.
+; So this entry function copies the request packet to the real mode stack location.
+; Afterwards it transitions into real mode and jumps to the service call main function,
+; which can access the request packet as an argument because it's on its stack already.
+service_call_entry:
+    mov ebp, esp
+
+    ; make sure we are copying forward
+    cld
+
+    ; set ESI to packet struct address
+    lea esi, [ebp+0x4]
+
+    ; set EDI to argument location on real mode stack
+    lea edi, [REALMODE_STACK+0x2]
+
+    ; set ECX to number of bytes to copy
+    mov ecx, SERVICE_REQUEST_PACKET_SIZE
+
+    ; copy source buffer to destination buffer
+    rep movsb
+
+    ; enter real mode with service_call_main as jump target
+    push service_call_main
+    call enter_real_mode
+    jmp $ ; should never execute
+
+[bits 16]
 global enter_protected_mode
 ; receives 2 arguments: gdt descriptor address and jump target
 enter_protected_mode:
@@ -146,6 +183,9 @@ global copy_section
 ; copy a section of the kernel from the temporary address it has been loaded into
 ; (beacause of real mode address limitiations) to its permanent load address
 copy_section:
+    ; make sure we are copying forward
+    cld
+
     ; set ESI to source buffer
     mov esi, DISK_LOAD_ADDRESS
 
