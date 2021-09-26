@@ -38,12 +38,20 @@ void kmain()
 
     // test real mode services
     debug("Performing int 0x%x", IRQ_REALMODE_SERVICES);
-    asm volatile ("mov $5, %eax"); // service 5
-    asm volatile ("mov $8, %ebx"); // function 8
-    asm volatile ("mov $0x1234abcd, %esi"); // input buffer 0x1234abcd
-    asm volatile ("mov $0x2345bcde, %edi"); // output buffer 0x2345bcde
+    uint32 in_buf[2];
+    in_buf[0] = 0xdeadbeef;
+    in_buf[1] = 0xcafebabe;
+    uint32 *out_buf;
+    asm volatile ("mov $5, %ah"); // service 5
+    asm volatile ("mov $8, %al"); // function 8
+    asm volatile ("mov $8, %ecx"); // input buffer length
+    asm volatile ("mov %0, %%esi" :: "r"(&in_buf) : "eax"); // input buffer
+    asm volatile ("mov %0, %%edi" :: "r"(&out_buf): "eax"); // output buffer
 
     asm volatile ("int %0" :: "i"(IRQ_REALMODE_SERVICES));
+    uint32 ecx;
+    asm volatile ("mov %%ecx, %0" : "=g"(ecx));
 
     debug("Back from IRQ");
+    debug("ecx: 0x%x, out[0]: 0x%x, out[1]: 0x%x", ecx, out_buf[0], out_buf[1]);
 }

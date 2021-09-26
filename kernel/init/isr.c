@@ -13,17 +13,17 @@
  * which means we will be stuck in an infinite exception loop.
  * So, this handler will panic the kernel.
  */
-void general_protection_fault(interrupt_info info)
+void general_protection_fault(interrupt_info *info)
 {
     char str[100];
-    snprintf(str, 100, "a general protection fault has occurred at address 0x%x", info.eip);
+    snprintf(str, 100, "a general protection fault has occurred at address 0x%x", info->eip);
     kernel_panic(str);
 }
 
-void double_fault(interrupt_info info)
+void double_fault(interrupt_info *info)
 {
     char str[100];
-    snprintf(str, 100, "a double fault has occurred at address 0x%x with error code 0x%x", info.eip, info.error_code);
+    snprintf(str, 100, "a double fault has occurred at address 0x%x with error code 0x%x", info->eip, info->error_code);
     kernel_panic(str);
 }
 

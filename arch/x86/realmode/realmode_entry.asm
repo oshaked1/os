@@ -1,6 +1,6 @@
 CODE_SEGMENT equ 8
 DATA_SEGMENT equ 16
-SERVICE_REQUEST_PACKET_SIZE equ 16
+SERVICE_REQUEST_PACKET_SIZE equ 18
 
 [bits 16]
 [extern realmode_main]
@@ -55,13 +55,21 @@ service_call_entry:
 times 0x200 - ($-$$) db 0
 global service_call_return
 ; This is the return address for real mode service calls after they have transitioned back into protected mode.
-; It restores the original EBP and ESP of the kernel stack, loads the kernel IDT, restores interrupts and performs a RET.
+; It restores the original EBP and ESP of the kernel stack, loads the kernel IDT, restores output registers, restores interrupts and performs a RET.
 service_call_return:
     mov ebp, [saved_ebp]
     mov esp, [saved_esp]
 
     mov eax, [saved_idt]
     lidt [eax]
+
+    mov eax, [saved_eax]
+    mov ebx, [saved_ebx]
+    mov ecx, [saved_ecx]
+    mov edx, [saved_edx]
+    mov esi, [saved_esi]
+    mov edi, [saved_edi]
+
     sti
 
     ret
@@ -71,6 +79,21 @@ saved_ebp:
 saved_esp:
     dd 0
 saved_idt:
+    dd 0
+
+; save real mode service output registers
+global saved_eax, saved_ebx, saved_ecx, saved_edx, saved_esi, saved_edi
+saved_eax:
+    dd 0
+saved_ebx:
+    dd 0
+saved_ecx:
+    dd 0
+saved_edx:
+    dd 0
+saved_esi:
+    dd 0
+saved_edi:
     dd 0
 
 [bits 16]

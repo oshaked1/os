@@ -32,7 +32,7 @@ void high_level_handler(interrupt_info info)
     void (*func)() = interrupt_handlers[info.interrupt_number];
     // if the address is 0, then there is no handler registered
     if (func != 0)
-        func(info);
+        func(&info);
     
     // external interrupts need to be acknowledged
     acknowledge_interrupt(info.interrupt_number);
