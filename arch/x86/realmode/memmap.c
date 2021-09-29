@@ -1,5 +1,4 @@
 #include "service_call.h"
-
 #include "print.h"
 
 // See https://wiki.osdev.org/Detecting_Memory_(x86) for detaield explanation on the following routines
@@ -35,7 +34,7 @@ void obtain_memmap(service_packet pkt)
         // perform int 0x15 (BIOS memory services)
         asm volatile ("int $0x15");
 
-        // reserve EAX and EBX
+        // save EAX and EBX
         asm volatile ("mov %%eax, %0" : "=g"(eax) :: "ebx");
         asm volatile ("mov %%ebx, %0" : "=g"(ebx));
 
