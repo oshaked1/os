@@ -206,6 +206,7 @@ The kernel currently does a few initialization tasks:
 - Set up the IDT (Interrupt Descriptor Table) for interrupt handling
 - Install high-level ISR (Interrupt Service Routine) and IRQ (Interrupt Request) handlers (only a single ISR and a single IRQ are implemented as of now)
 - Set up the PIC (Programmable Interrupt Controller) for receiving hardware interrupts
+- Obtain a memory map
 
 The kernel also features a logging mechanism based on Syslog principles (and heavily inspired by the logging mechanism in Cisco IOS). Log messages are currently printed on the screen and sent through the serial port (which gets written to a file on the host with the magic of QEMU). Each log has a priority value between 0 (emergency) and 7 (debug). Each log destination only receives logs of a configured priority and higher (lower value).
 
@@ -220,19 +221,13 @@ The OS has a few device drivers, most of them are partial and only the necessary
 
 The following are the next things that need to be worked on.
 
-##### 16-bit real mode kernel services
+##### Better printing
 
-Many platform services (like obtaining a memory map) are only available in real mode, which means that the kernel must transition into real mode, perform whatever it needs, and go back into protected mode.
-
-Instead of compiling different parts of the kernel for different targets (32-bit and 16-bit), I plan to provide all real mode services as a real mode IRQ handler. The real mode code that is loaded as the 2nd stage boot loader will also include many real mode services for the kernel to use.
-
-Whenever the kernel needs one of these services, it issues a predefined interrupt with parameters (like the requested service) passed on some registers. The IRQ for that interrupt will transition into real mode, and jump to the beginning of the 2nd stage boot loader, with all the service request parameters passed on to its stack. The boot loader code will check its stack for parameters and will thus know if it is executing as a boot loader, or as a service provider (with the requested service in the given parameters).
-
-Output from real mode services will be written to memory at a location given as a parameter.
+The implementation of vsnprintf needs to be extended to support printing 64-bit integers. Also, support for tabs needs to be added to the screen.
 
 ##### Kernel memory management
 
-The kernel cannot perform some more advanced tasks without dynamic memory allocation. A kernel heap needs to be implemented, along with memory management functions such as malloc and friends. Before that, a detailed memory map needs to be obtained (using real mode BIOS services) so that we can start managing the physical memory.
+The kernel cannot perform some more advanced tasks without dynamic memory allocation. A kernel heap needs to be implemented, along with memory management functions such as malloc and friends.
 
 ## Read List & Technical References
 

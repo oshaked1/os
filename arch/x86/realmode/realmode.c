@@ -30,17 +30,22 @@ void service_call_main(service_packet pkt)
     prints("\r\ndestination buffer is at 0x");
     printh(pkt.output_buffer);
     prints("\r\n");
-
-    // set output registers
-    saved_eax = 0x1234;
-    saved_ebx = 0xabcd1234;
-    saved_ecx = 8; // output buffer length
-    
-    // fill output buffer
-    uint32 *out_buf = (uint32*)(uint32)pkt.output_buffer;
-    out_buf[0] = 0xdeadc0de;
-    out_buf[1] = 0xdefeca8e;
 #endif
+
+    switch (pkt.service)
+    {
+        case SERVICE_MEMMAP:
+            switch (pkt.function)
+            {
+                case OBTAIN_MEMMAP:
+                    obtain_memmap(pkt);
+                    break;
+            }
+            break;
+        
+        default:
+            break;
+    }
 
     // return to protected mode with service_call_return as jump target
     switch_protected_mode(SERVICE_RETURN_ADDRESS);

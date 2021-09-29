@@ -40,7 +40,7 @@ void load_section()
         return;
     }
 
-#ifdef __DEBUG__
+#ifdef __REALMODE_DEBUG__
     prints("copying sectors 0x");
     printh(current_sector);
     prints(" to 0x");

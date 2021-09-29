@@ -8,7 +8,7 @@ OBJ16 = ${C_REALMODE_SOURCES:.c=.o16}
 
 # Debug settings
 DEBUG          = TRUE  # extra debugging messages (can be very verbose)
-REALMODE_DEBUG = TRUE  # print real mode service messages to screen
+REALMODE_DEBUG = FALSE # print real mode service messages to screen
 
 # Size of binary files after padding - MUST BE DIVISIBLE BY 512 (sector size)
 REALMODE_SIZE = 4096
@@ -50,7 +50,7 @@ NASM_DEFS = -D REALMODE_LOAD_ADDRESS=${REALMODE_LOAD_ADDRESS} -D REALMODE_SECTOR
 # I use the Windows executable from within WSL (see https://docs.microsoft.com/en-us/windows/wsl/interop)
 QEMU = qemu-system-i386.exe
 # Redirect serial output to stdout and a logfile, don't reboot (so triple faults don't create an infinite boot loop)
-QEMUFLAGS = -chardev stdio,id=char0,logfile=serial.log,signal=off -serial chardev:char0 -no-reboot
+QEMUFLAGS = -chardev stdio,id=char0,logfile=serial.log,signal=off -serial chardev:char0 -no-reboot -m 128M
 
 # First rule is run by default
 os-image.bin: boot/bootsector.bin realmode.bin kernel.bin

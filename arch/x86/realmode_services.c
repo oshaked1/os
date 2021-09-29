@@ -37,6 +37,9 @@ void realmode_service_call(interrupt_info *info)
     pkt.arg1 = info->ebx;
     pkt.arg2 = info->edx;
 
+    // save output buffer location for later
+    void *output_buf = (void*)info->edi;
+
     // check if the requested function receives an input buffer
     switch (pkt.service)
     {
@@ -81,7 +84,7 @@ no_input_buffer:
     pkt.output_buffer = REALMODE_INPUT_BUFFER;
 
 enter_realmode:
-#ifdef __DEBUG__
+#ifdef __REALMODE_DEBUG__
     debug("Entering real mode service 0x%x function 0x%x", pkt.service, pkt.function);
 #endif
 
@@ -98,14 +101,14 @@ enter_realmode:
     realmode_service_entry(&idt_desc, pkt);
 
     // save registers
-    asm volatile ("mov %%eax, %0" : "=g"(info->eax));
-    asm volatile ("mov %%ebx, %0" : "=g"(info->ebx));
-    asm volatile ("mov %%ecx, %0" : "=g"(info->ecx));
-    asm volatile ("mov %%edx, %0" : "=g"(info->edx));
-    asm volatile ("mov %%esi, %0" : "=g"(info->esi));
+    asm volatile ("mov %%eax, %0" : "=g"(info->eax) :: "ebx", "ecx", "edx", "esi", "edi");
+    asm volatile ("mov %%ebx, %0" : "=g"(info->ebx) :: "ecx", "edx", "esi", "edi");
+    asm volatile ("mov %%ecx, %0" : "=g"(info->ecx) :: "edx", "esi", "edi");
+    asm volatile ("mov %%edx, %0" : "=g"(info->edx) :: "esi", "edi");
+    asm volatile ("mov %%esi, %0" : "=g"(info->esi) :: "edi");
     asm volatile ("mov %%edi, %0" : "=g"(info->edi));
 
-#ifdef __DEBUG__
+#ifdef __REALMODE_DEBUG__
     debug("Back from real mode service 0x%x function 0x%x", pkt.service, pkt.function);
 #endif
 
@@ -124,10 +127,10 @@ enter_realmode:
 
 output_buffer:
     // copy real mode output buffer to location specified in the original request
-    memcpy((void*)info->edi, (void*)(size_t)pkt.output_buffer, info->ecx);
+    memcpy(output_buf, (void*)(size_t)pkt.output_buffer, info->ecx);
 
 end:
-#ifdef __DEBUG__
+#ifdef __REALMODE_DEBUG__
     debug("output registers: eax: 0x%x, ebx: 0x%x, ecx: 0x%x, edx: 0x%x, esi: 0x%x, edi: 0x%x",info->eax,info->ebx,info->ecx,info->edx,info->esi,info->edi);
 #endif
     return;
