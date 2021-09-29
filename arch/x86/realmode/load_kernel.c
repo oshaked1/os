@@ -52,7 +52,7 @@ void load_section()
 
     // copy the section from its temporary location to its permanent location
     // using the 32 bit protected mode "copy_section" assembly routine
-    switch_protected_mode((uint16)copy_section);
+    switch_protected_mode((uint32)copy_section);
 }
 
 /**

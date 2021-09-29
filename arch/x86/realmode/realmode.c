@@ -12,7 +12,7 @@ void realmode_main()
 }
 
 // currently only shows debug output and returns
-void service_call_main(struct service_packet pkt)
+void service_call_main(service_packet pkt)
 {
 #ifdef __REALMODE_DEBUG__
     prints("Entered service call main!\r\n");
@@ -22,7 +22,7 @@ void service_call_main(struct service_packet pkt)
     printh(pkt.function);
     prints("\r\ninput buffer at 0x");
     printh(pkt.input_buffer);
-    uint32 *in_buf = (uint32*)pkt.input_buffer;
+    uint32 *in_buf = (uint32*)(uint32)pkt.input_buffer;
     prints(" contains 0x");
     printh(in_buf[0]);
     prints(", 0x");
@@ -37,7 +37,7 @@ void service_call_main(struct service_packet pkt)
     saved_ecx = 8; // output buffer length
     
     // fill output buffer
-    uint32 *out_buf = (uint32*)pkt.output_buffer;
+    uint32 *out_buf = (uint32*)(uint32)pkt.output_buffer;
     out_buf[0] = 0xdeadc0de;
     out_buf[1] = 0xdefeca8e;
 #endif

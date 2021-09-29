@@ -24,7 +24,7 @@
  * location specified in the original request.
  * 
  * The real mode service handler may return values in the general purpose registers, which can be used by the
- * caller. EDX, as a convention, contains an error code.
+ * caller. EDX, as a convention, contains an error code, while ECX contains the length of the output buffer.
  * 
  * @param info The interrupt info struct that is passed by the interrupt handler
  */

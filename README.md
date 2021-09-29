@@ -158,30 +158,6 @@ cd ../gcc-11.2.0
 cd ../gcc-build
 ```
 
-#### IA16 Binutils and GCC
-
-To compile code for 16-bit real mode, we will need to build Binutils and GCC for the IA16 target. This target is not supported by standard GCC, so we will need to obtain and build an IA16 fork of GCC. Before building, make sure you have **bison** and **autoconf** installed: `apt install bison autoconf`
-
-Obtain and build Binutils and GCC for IA16 as following:
-
-```bash
-mkdir /tmp/src
-cd /tmp/src
-git clone https://github.com/tkchia/build-ia16.git # repository with build scripts
-cd build-ia16
-./fetch.sh # clones gcc-ia16 from github along with other repositories needed for building
-./build.sh clean
-./build.sh binutils
-./build.sh prereqs
-./build.sh gcc1
-./build.sh newlib
-./build.sh libi86
-./build.sh gcc2
-mv prefix /usr/local/ia16elfgcc # move the output directory to the same place as the rest of our installation dirs
-cd ..
-rm -rf build-ia16
-```
-
 #### NASM
 
 NASM is used for assembling boot sector code and some other assembly code here and there. Install it using `apt install nasm`

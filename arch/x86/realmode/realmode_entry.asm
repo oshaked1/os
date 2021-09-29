@@ -38,7 +38,7 @@ service_call_entry:
     lea esi, [ebp+0x8]
 
     ; set EDI to argument location on real mode stack
-    lea edi, [REALMODE_STACK+0x2]
+    lea edi, [REALMODE_STACK+0x4]
 
     ; set ECX to number of bytes to copy
     mov ecx, SERVICE_REQUEST_PACKET_SIZE
@@ -106,7 +106,7 @@ enter_protected_mode:
     cli
 
     ; load gdt from first argument
-    mov eax, [ebp+0x2]
+    mov eax, [ebp+0x4]
     lgdt [eax]
 
     ; enter 32-bit protected mode
@@ -128,7 +128,7 @@ init_protected_mode:
     mov ss, ax
 
     ; load jump target into register
-    mov eax, [ebp+0x6]
+    mov eax, [ebp+0x8]
 
     ; initialize protected mode stack
     mov ebp, PROTECTED_MODE_STACK

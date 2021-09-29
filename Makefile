@@ -12,7 +12,7 @@ REALMODE_DEBUG = TRUE  # print real mode service messages to screen
 
 # Size of binary files after padding - MUST BE DIVISIBLE BY 512 (sector size)
 REALMODE_SIZE = 4096
-KERNEL_SIZE = 32768
+KERNEL_SIZE   = 32768
 
 # Binary file loading addresses
 REALMODE_LOAD_ADDRESS = 0x1000
@@ -27,8 +27,6 @@ PROTECTED_MODE_STACK = 0x70000
 CC = /usr/local/i386elfgcc/bin/i386-elf-gcc
 LD = /usr/local/i386elfgcc/bin/i386-elf-ld
 GDB = /usr/local/i386elfgcc/bin/i386-elf-gdb
-CC16 = /usr/local/ia16elfgcc/bin/ia16-elf-gcc
-LD16 = /usr/local/ia16elfgcc/bin/ia16-elf-ld
 
 # -g: Use debugging symbols in gcc
 CFLAGS = -g
@@ -44,8 +42,7 @@ DEBUG_DEFS := ${DEBUG_DEFS} -D __REALMODE_DEBUG__
 endif
 
 # Full definition lists
-CC_DEFS = ${DEBUG_DEFS} -D DISK_LOAD_ADDRESS=${DISK_LOAD_ADDRESS}
-CC16_DEFS = ${DEBUG_DEFS} -D REALMODE_SECTORS=${shell expr ${REALMODE_SIZE} / 512} -D KERNEL_SIZE=${KERNEL_SIZE} -D DISK_LOAD_ADDRESS=${DISK_LOAD_ADDRESS} -D KERNEL_LOAD_ADDRESS=${KERNEL_LOAD_ADDRESS} -D REALMODE_LOAD_ADDRESS=${REALMODE_LOAD_ADDRESS}
+CC_DEFS = ${DEBUG_DEFS} -D REALMODE_SECTORS=${shell expr ${REALMODE_SIZE} / 512} -D KERNEL_SIZE=${KERNEL_SIZE} -D DISK_LOAD_ADDRESS=${DISK_LOAD_ADDRESS} -D KERNEL_LOAD_ADDRESS=${KERNEL_LOAD_ADDRESS} -D REALMODE_LOAD_ADDRESS=${REALMODE_LOAD_ADDRESS}
 NASM_DEFS = -D REALMODE_LOAD_ADDRESS=${REALMODE_LOAD_ADDRESS} -D REALMODE_SECTORS=${shell expr ${REALMODE_SIZE} / 512} -D DISK_LOAD_ADDRESS=${DISK_LOAD_ADDRESS} -D KERNEL_LOAD_ADDRESS=${KERNEL_LOAD_ADDRESS} -D REALMODE_STACK=${REALMODE_STACK} -D PROTECTED_MODE_STACK=${PROTECTED_MODE_STACK}
 
 # QEMU
@@ -70,12 +67,12 @@ kernel.elf: boot/kernel_entry.o ${OBJ}
 	${LD} -o $@ -Ttext ${KERNEL_LOAD_ADDRESS} $^
 
 realmode.bin: arch/x86/realmode/realmode_entry.o ${OBJ16}
-	${LD16} -o $@ -Ttext ${REALMODE_LOAD_ADDRESS} $^ --oformat binary
+	${LD} -o $@ -Ttext ${REALMODE_LOAD_ADDRESS} $^ --oformat binary
 	dd if=/dev/zero of=$@ bs=1 count=1 seek=${shell expr ${REALMODE_SIZE} - 1}
 
 # Used for debugging purposes
 realmode.elf: arch/x86/realmode/realmode_entry.o ${OBJ16}
-	${LD16} -o $@ -Ttext ${REALMODE_LOAD_ADDRESS} $^
+	${LD} -o $@ -Ttext ${REALMODE_LOAD_ADDRESS} $^
 
 run: os-image.bin
 	${QEMU} ${QEMUFLAGS} -drive format=raw,file=$<
@@ -84,6 +81,10 @@ run: os-image.bin
 debug: os-image.bin kernel.elf realmode.elf
 	${QEMU} ${QEMUFLAGS} -s -S -drive format=raw,file=$< &
 	${GDB} -ex "target remote localhost:1234" -ex "symbol-file kernel.elf"
+
+debug-realmode: os-image.bin kernel.elf realmode.elf
+	${QEMU} ${QEMUFLAGS} -s -S -drive format=raw,file=$< &
+	${GDB} -ex "target remote localhost:1234" -ex "symbol-file realmode.elf"
 
 # Place release binaries in a dedicated directory
 release: os-image.bin kernel.elf realmode.elf
@@ -97,7 +98,7 @@ release: os-image.bin kernel.elf realmode.elf
 	${CC} ${CFLAGS} ${CC_DEFS} -ffreestanding -c $< -o $@
 
 %.o16: %.c ${REALMODE_HEADERS}
-	${CC16} ${CC16_DEFS} -ffreestanding -c $< -o $@
+	${CC} ${CFLAGS} ${CC_DEFS} -m16 -ffreestanding -c $< -o $@
 
 %.o: %.asm
 	nasm ${NASM_DEFS} $< -f elf -o $@

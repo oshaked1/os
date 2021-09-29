@@ -53,7 +53,7 @@ bool disk_load(uint8 drive_num, uint32 lba, uint16 num_sectors, uint16 segment, 
     asm volatile ("mov %ax, %ds");
 
     // set si to address packet location
-    asm volatile ("mov %0, %%si" :: "r"(&addr_pkt));
+    asm volatile ("mov %0, %%esi" :: "r"(&addr_pkt));
 
     // ah=0x42 - disk read using LBA
     asm volatile ("mov $0x42, %ah");

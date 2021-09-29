@@ -31,7 +31,7 @@ void init_gdt()
 
     // setup gdt descriptor
     gdt_desc.size = sizeof(struct gdt_entry) * 3 - 1;
-    gdt_desc.offset = (uint16)gdt;
+    gdt_desc.offset = (uint32)gdt;
 }
 
 void switch_protected_mode(uint32 jump_target)
@@ -40,5 +40,5 @@ void switch_protected_mode(uint32 jump_target)
     init_gdt();
 
     // call protected mode entry
-    enter_protected_mode((uint16)&gdt_desc, jump_target);
+    enter_protected_mode((uint32)&gdt_desc, jump_target);
 }
