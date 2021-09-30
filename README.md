@@ -95,7 +95,7 @@ rm -rf binutils-build
 mkdir binutils-build
 cd binutils-build
 export PREFIX="/usr/local/x86_64elfgcc" # installation directory (Makefile uses this directory by default)
-export TARGET=i386-elf
+export TARGET=x86_64-elf
 export PATH="$PREFIX/bin:$PATH"
 ../binutils-2.37/configure --target=$TARGET --enable-interwork --enable-multilib --disable-nls --disable-werror --prefix=$PREFIX 2>&1 | tee configure.log
 sudo make all install 2>&1 | tee make.log
