@@ -1,8 +1,8 @@
 #include "isr.h"
-#include "../../lib/types.h"
-#include "../../lib/stdio.h"
-#include "../../arch/x86/interrupt.h"
-#include "../panic.h"
+#include "../lib/types.h"
+#include "../lib/stdio.h"
+#include "../arch/x86/interrupt.h"
+#include "panic.h"
 
 /**
  * @brief General protection faults can happen because a myriad of reasons.

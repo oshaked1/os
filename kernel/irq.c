@@ -1,9 +1,9 @@
 #include "irq.h"
-#include "../../arch/x86/interrupt.h"
+#include "../arch/x86/interrupt.h"
 
 // headers containing IRQ handlers
-#include "../../drivers/keyboard.h"
-#include "../../arch/x86/realmode_services.h"
+#include "../drivers/keyboard.h"
+#include "../arch/x86/realmode_services.h"
 
 void install_irqs()
 {

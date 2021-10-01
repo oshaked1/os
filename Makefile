@@ -1,6 +1,6 @@
-C_SOURCES = $(wildcard kernel/*.c drivers/*.c lib/*.c arch/x86/*.c kernel/init/*.c)
+C_SOURCES = $(wildcard kernel/*.c drivers/*.c lib/*.c arch/x86/*.c mm/*.c)
 C_REALMODE_SOURCES = $(wildcard arch/x86/realmode/*.c)
-HEADERS = $(wildcard kernel/*.h drivers/*.h lib/*.h arch/x86/*.h kernel/init/*.h)
+HEADERS = $(wildcard kernel/*.h drivers/*.h lib/*.h arch/x86/*.h mm/*.h)
 REALMODE_HEADERS = $(wildcard arch/x86/realmode/*.h)
 # Nice syntax for file extension replacement
 OBJ = ${C_SOURCES:.c=.o}
@@ -21,7 +21,7 @@ KERNEL_LOAD_ADDRESS   = 0x100000
 
 # Realmode and Protected mode stacks
 REALMODE_STACK       = 0x9000
-PROTECTED_MODE_STACK = 0x70000
+PROTECTED_MODE_STACK = 0x80000
 
 # Change this if your cross-compiler is somewhere else
 CC = /usr/local/i386elfgcc/bin/i386-elf-gcc
@@ -42,7 +42,7 @@ DEBUG_DEFS := ${DEBUG_DEFS} -D __REALMODE_DEBUG__
 endif
 
 # Full definition lists
-CC_DEFS = ${DEBUG_DEFS} -D REALMODE_SECTORS=${shell expr ${REALMODE_SIZE} / 512} -D KERNEL_SIZE=${KERNEL_SIZE} -D DISK_LOAD_ADDRESS=${DISK_LOAD_ADDRESS} -D KERNEL_LOAD_ADDRESS=${KERNEL_LOAD_ADDRESS} -D REALMODE_LOAD_ADDRESS=${REALMODE_LOAD_ADDRESS}
+CC_DEFS = ${DEBUG_DEFS} -D REALMODE_SECTORS=${shell expr ${REALMODE_SIZE} / 512} -D KERNEL_SIZE=${KERNEL_SIZE} -D DISK_LOAD_ADDRESS=${DISK_LOAD_ADDRESS} -D KERNEL_LOAD_ADDRESS=${KERNEL_LOAD_ADDRESS} -D REALMODE_LOAD_ADDRESS=${REALMODE_LOAD_ADDRESS} -D PROTECTED_MODE_STACK=${PROTECTED_MODE_STACK}
 NASM_DEFS = -D REALMODE_LOAD_ADDRESS=${REALMODE_LOAD_ADDRESS} -D REALMODE_SECTORS=${shell expr ${REALMODE_SIZE} / 512} -D DISK_LOAD_ADDRESS=${DISK_LOAD_ADDRESS} -D KERNEL_LOAD_ADDRESS=${KERNEL_LOAD_ADDRESS} -D REALMODE_STACK=${REALMODE_STACK} -D PROTECTED_MODE_STACK=${PROTECTED_MODE_STACK}
 
 # QEMU
@@ -108,6 +108,6 @@ release: os-image.bin kernel.elf realmode.elf
 
 clean:
 	rm -rf *.bin *.dis *.o os-image.bin *.elf
-	rm -rf kernel/*.o boot/*.bin drivers/*.o boot/*.o lib/*.o arch/x86/*.o kernel/init/*.o
+	rm -rf kernel/*.o boot/*.bin drivers/*.o boot/*.o lib/*.o arch/x86/*.o mm/*.o
 	rm -rf arch/x86/realmode/*.o arch/x86/realmode/*.o16 arch/x86/realmode/*.bin
 	rm -f serial.log

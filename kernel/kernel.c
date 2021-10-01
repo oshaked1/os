@@ -5,10 +5,10 @@
 #include "../drivers/screen.h"
 #include "../arch/x86/interrupt.h"
 #include "syslog.h"
-#include "init/isr.h"
-#include "init/irq.h"
+#include "isr.h"
+#include "irq.h"
 #include "../drivers/pic.h"
-#include "init/memmap.h"
+#include "../mm/memmap.h"
 
 void kernel_init()
 {
@@ -29,8 +29,12 @@ void kernel_init()
     log("SYS", 6, "INIT", "IDT has been loaded");
 
     // obtain a memory map
-    log("SYS", 6, "INIT", "Detecting memory");
-    obtain_memmap();
+    log("SYS", 6, "INIT", "Detecting physical memory");
+    obtain_bios_memmap();
+
+    // initialize kernel memory regions
+    log("SYS", 6, "INIT", "Initializing kernel memory layout");
+    init_kernel_memmap();
 }
 
 void kmain()

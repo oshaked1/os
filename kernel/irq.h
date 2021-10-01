@@ -1,4 +1,4 @@
-#include "../../drivers/pic.h"
+#include "../drivers/pic.h"
 
 // PIC1 IRQ lines
 #define IRQ0  PIC1_START_INT
