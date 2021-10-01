@@ -106,60 +106,75 @@ uint kputchar_color(uchar c, uchar color)
         cursor_pos = LAST_ROW_POS;
     }
 
-    // handle carriage return by moving the cursor to the beginning of the line
-    if (c == '\r')
+    switch(c)
     {
-        cursor_pos = GET_ROW_POS(GET_ROW(cursor_pos));
-        set_cursor_pos(cursor_pos);
-    }
-    
-    // handle line feed by moving the cursor to the beginning of the next line, scrolling the screen if needed
-    else if (c == '\n')
-    {
-        locked_rows[GET_ROW(cursor_pos)] = TRUE;
-        cursor_pos = GET_ROW_POS(GET_ROW(cursor_pos)+1);
-        if (GET_ROW(cursor_pos) >= FRAME_BUFFER_ROWS)
-        {
-            scroll();
-            cursor_pos = LAST_ROW_POS;
-        }
-        set_cursor_pos(cursor_pos);
-    }
-
-    // handle escape by doing nothing
-    else if (c == '\e');
-
-    // handle backspace by moving the cursor one cell back and setting it's contents to none
-    else if (c == '\b')
-    {
-        // make sure we aren't returning to the previous row, or if we are, that it is allowed
-        if ((GET_ROW(cursor_pos) == GET_ROW(cursor_pos-1)) || locked_rows[GET_ROW(cursor_pos)-1] == FALSE)
-        {
-            cursor_pos -= 1;
+        // handle carriage return by moving the cursor to the beginning of the line
+        case '\r':
+            cursor_pos = GET_ROW_POS(GET_ROW(cursor_pos));
             set_cursor_pos(cursor_pos);
+            break;
+        
+        // handle line feed by moving the cursor to the beginning of the next line, scrolling the screen if needed
+        case '\n':
+            locked_rows[GET_ROW(cursor_pos)] = TRUE;
+            cursor_pos = GET_ROW_POS(GET_ROW(cursor_pos)+1);
+            if (GET_ROW(cursor_pos) >= FRAME_BUFFER_ROWS)
+            {
+                scroll();
+                cursor_pos = LAST_ROW_POS;
+            }
+            set_cursor_pos(cursor_pos);
+            break;
+
+        // handle escape by doing nothing
+        case '\e':
+            break;
+
+        // handle backspace by moving the cursor one cell back and setting it's contents to none
+        case '\b':
+            // make sure we aren't returning to the previous row, or if we are, that it is allowed
+            if ((GET_ROW(cursor_pos) == GET_ROW(cursor_pos-1)) || locked_rows[GET_ROW(cursor_pos)-1] == FALSE)
+            {
+                cursor_pos -= 1;
+                set_cursor_pos(cursor_pos);
+                ushort *buffer = (ushort*)FRAME_BUFFER;
+                buffer[cursor_pos] = VGA_CELL(0, color);
+            }
+            break;
+        
+        // handle tabs by checking how close we are to a tab boundary and adding spaces accordingly
+        case '\t':
+            int pos_in_row = cursor_pos % FRAME_BUFFER_COLS;
+            int spaces = TAB_SIZE - (pos_in_row % TAB_SIZE);
+            
+            // we are on a tab boundary - add a full tab worth of spaces
+            if (spaces == 0)
+                spaces = TAB_SIZE;
+            
+            // add spaces
+            while (spaces--)
+                cursor_pos = kputchar_color(' ', color);
+            break;
+
+        // printable character
+        default:
+            // calculate value to write to frame buffer
+            ushort value = VGA_CELL(c, color);
+
+            // write to frame buffer
             ushort *buffer = (ushort*)FRAME_BUFFER;
-            buffer[cursor_pos] = VGA_CELL(0, color);
-        }
-    }
+            buffer[cursor_pos] = value;
 
-    else
-    {
-        // calculate value to write to frame buffer
-        ushort value = VGA_CELL(c, color);
+            // increment cursor position and scroll the screen if it is out of bounds
+            cursor_pos++;
+            if (GET_ROW(cursor_pos) >= FRAME_BUFFER_ROWS)
+            {
+                scroll();
+                cursor_pos = LAST_ROW_POS;
+            }
 
-        // write to frame buffer
-        ushort *buffer = (ushort*)FRAME_BUFFER;
-        buffer[cursor_pos] = value;
-
-        // increment cursor position and scroll the screen if it is out of bounds
-        cursor_pos++;
-        if (GET_ROW(cursor_pos) >= FRAME_BUFFER_ROWS)
-        {
-            scroll();
-            cursor_pos = LAST_ROW_POS;
-        }
-
-        set_cursor_pos(cursor_pos);
+            set_cursor_pos(cursor_pos);
+            break;
     }
 
     return cursor_pos;

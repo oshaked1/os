@@ -26,5 +26,5 @@ void obtain_memmap()
 
     int i;
     for (i = 0; i < len / 24; i++)
-        debug("Base: 0x%llx  Length: 0x%llx  Type: %d  ACPI Attrs: 0x%x", memmap[i].base, memmap[i].len, memmap[i].type, memmap[i].acpi_attrs);
+        debug("Base: 0x%llx\tLength: 0x%llx\tType: %d\tACPI Attrs: 0x%x", memmap[i].base, memmap[i].len, memmap[i].type, memmap[i].acpi_attrs);
 }

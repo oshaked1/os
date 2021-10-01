@@ -50,6 +50,9 @@ enum VGA_COLORS{VGA_BLACK, VGA_BLUE, VGA_GREEN, VGA_CYAN,
 // macro for generating a VGA frame buffer cell value
 #define VGA_CELL(char, color) (((ushort)(color) << 8) + (char))
 
+// number of spaces per tab
+#define TAB_SIZE 4
+
 // public kernel functions
 uint kputchar(uchar c);
 uint kputchar_color(uchar c, uchar color);
