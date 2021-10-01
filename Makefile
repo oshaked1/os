@@ -31,6 +31,17 @@ GDB = /usr/local/i386elfgcc/bin/i386-elf-gdb
 # -g: Use debugging symbols in gcc
 CFLAGS = -g
 
+# File size macro
+define sizeof
+	$$(du -sb \
+	$(1) \
+	| cut -f1)
+endef
+
+# Print colors
+RED = '\033[0;31m'
+NC  = '\033[0m' # no color
+
 ### Preprocessor definitions
 
 # Debug definitions based on debug settings
@@ -60,6 +71,7 @@ os-image.bin: boot/bootsector.bin realmode.bin kernel.bin
 # to 'strip' them manually
 kernel.bin: boot/kernel_entry.o ${OBJ}
 	${LD} -o $@ -Ttext ${KERNEL_LOAD_ADDRESS} $^ --oformat binary
+	echo ${RED}Raw kernel size: ${call sizeof,$@}${NC}
 	dd if=/dev/zero of=$@ bs=1 count=1 seek=${shell expr ${KERNEL_SIZE} - 1}
 
 # Used for debugging purposes
@@ -68,6 +80,7 @@ kernel.elf: boot/kernel_entry.o ${OBJ}
 
 realmode.bin: arch/x86/realmode/realmode_entry.o ${OBJ16}
 	${LD} -o $@ -Ttext ${REALMODE_LOAD_ADDRESS} $^ --oformat binary
+	echo ${RED}Raw realmoe size: ${call sizeof,$@}${NC}
 	dd if=/dev/zero of=$@ bs=1 count=1 seek=${shell expr ${REALMODE_SIZE} - 1}
 
 # Used for debugging purposes

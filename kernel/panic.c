@@ -1,5 +1,6 @@
 #include "../arch/x86/reset.h"
 #include "syslog.h"
+#include "../lib/stdio.h"
 #include "../lib/stdarg.h"
 
 void kernel_panic(const char *msg, ...)
