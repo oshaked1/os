@@ -90,6 +90,7 @@ void find_free_memory()
     for (i = 0; i < bios_memmap_entries; i++)
     {
         if (bios_memmap[i].type == TYPE_USABLE
+            && bios_memmap[i].base >= KERNEL_LOAD_ADDRESS
             && bios_memmap[i].len > largest)
         {
             largest = bios_memmap[i].len;
@@ -152,7 +153,7 @@ void init_kernel_memmap()
     {
         uint freemem_kb = (uint)freemem_size / 1024;
         uint req_mem_kb = MIN_FREE_MEM / 1024;
-        kernel_panic("Not enough contiguous memory is available (0x%uKB detected, 0x%uKB required)",
+        kernel_panic("Not enough contiguous memory is available (%uKB detected, %uKB required)",
             freemem_kb, req_mem_kb);
     }
     

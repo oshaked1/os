@@ -1,1 +1,1 @@
-void kernel_panic();
+void kernel_panic(const char *msg, ...);

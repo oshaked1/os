@@ -11,7 +11,7 @@ enum LOG_SEVERITY{LOG_EMERG, LOG_ALERT, LOG_CRIT, LOG_ERR,
 enum LOG_DST{DST_SCREEN, DST_SERIAL, DST_VTY, DST_LOGFILE, DST_SYSLOG};
 #endif
 
-#define MAX_LENGTH 512
+#define MAX_LOG_LENGTH 512
 
 int get_log_dst_severity(int dst);
 void set_log_dst_severity(int dst, int severity);

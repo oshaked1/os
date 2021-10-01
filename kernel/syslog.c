@@ -85,19 +85,19 @@ void set_syslog_serial_port(ushort com)
 
 void log(const char *subsys, int severity, const char *mnemonic, const char *message, ...)
 {
-    char str[MAX_LENGTH];
+    char str[MAX_LOG_LENGTH];
     va_list args;
     va_start(args, message);
-    vsnprintf(str, MAX_LENGTH, message, args);
+    vsnprintf(str, MAX_LOG_LENGTH, message, args);
     va_end(args);
 
     if (severity < 0 || severity > 7)
         return;
 
-    char fullstr[MAX_LENGTH];
-    snprintf(fullstr, MAX_LENGTH, "%%%s-%d-%s: %s\n", subsys, severity, mnemonic, str);
+    char fullstr[MAX_LOG_LENGTH];
+    snprintf(fullstr, MAX_LOG_LENGTH, "%%%s-%d-%s: %s\n", subsys, severity, mnemonic, str);
     // if the message was too long and was cut short, make sure it ends with a newline
-    fullstr[MAX_LENGTH-2] = '\n';
+    fullstr[MAX_LOG_LENGTH-2] = '\n';
 
     // print message on screen
     if (dst_screen_severity >= severity)
@@ -117,10 +117,10 @@ void log(const char *subsys, int severity, const char *mnemonic, const char *mes
 
 void debug(const char *message, ...)
 {
-    char str[MAX_LENGTH];
+    char str[MAX_LOG_LENGTH];
     va_list args;
     va_start(args, message);
-    vsnprintf(str, MAX_LENGTH, message, args);
+    vsnprintf(str, MAX_LOG_LENGTH, message, args);
     va_end(args);
 
     log("SYS", 7, "DEBUG", str);
