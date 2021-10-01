@@ -26,11 +26,5 @@ void obtain_memmap()
 
     int i;
     for (i = 0; i < len / 24; i++)
-    {
-        // this print doesn't work yet because my vsnprintf implementation does not support 64 bit integers
-        //debug("Base: 0x%llx  Length: 0x%llx  Type: %d  ACPI Attrs: 0x%x", memmap[i].base, memmap[i].len, memmap[i].type, memmap[i].acpi_attrs);
-
-        debug("Base High: 0x%x  Base Low: 0x%x  Length High: 0x%x  Length Low: 0x%x  Type: %d  ACPI Attrs: 0x%x", (uint32)(memmap[i].base >> 32) && 0xffffffff,
-            (uint32)memmap[i].base & 0xffffffff, (uint32)(memmap[i].len >> 32) & 0xffffffff, (uint32)memmap[i].len & 0xffffffff, memmap[i].type, memmap[i].acpi_attrs);
-    }
+        debug("Base: 0x%llx  Length: 0x%llx  Type: %d  ACPI Attrs: 0x%x", memmap[i].base, memmap[i].len, memmap[i].type, memmap[i].acpi_attrs);
 }

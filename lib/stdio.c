@@ -3,6 +3,8 @@
 #include "string.h"
 #include "stdlib.h"
 
+enum ARG_SIZE{INT, SHORT, LONG, LONGLONG};
+
 /**
  * @brief Minimal implementation of vsnprintf.
  * Supported specifiers: c, d, i, u, x, X, s.
@@ -20,7 +22,11 @@ int vsnprintf(char *str, size_t maxlen, const char *fmt, va_list args)
     int i, k;
     int j = 0;
     bool expecting_specifier = FALSE;
-    char temp[12]; // string for holding temporary itoa conversions. max length is currently 12 (max length of signed integer).
+    enum ARG_SIZE arg_size = INT;
+
+    // string for holding temporary itoa conversions. max length is currently 12 (max length of long long signed integer)
+    char temp[21];
+
     for (i = 0; i < strlen(fmt); i++)
     {
         if (expecting_specifier == FALSE)
@@ -71,25 +77,44 @@ int vsnprintf(char *str, size_t maxlen, const char *fmt, va_list args)
                     expecting_specifier = FALSE;
                     break;
                 
-                // signed decimal int
-                case 'd':
-                    itoa(va_arg(args, int), temp, 10);
-                    for (k = 0; k < strlen(temp); k++)
-                    {
-                        if (j < maxlen-1)
-                            str[j++] = temp[k];
-                        else 
-                        {
-                            str[maxlen-1] = 0;
-                            return maxlen;
-                        }
-                    }
-                    expecting_specifier = FALSE;
+                // short modifier
+                case 'h':
+                    arg_size = SHORT;
+                    break;
+
+                // long modifier
+                case 'l':
+                    // 2 l's in a row means long long
+                    if (arg_size == LONG)
+                        arg_size = LONGLONG;
+                    
+                    else
+                        arg_size = LONG;
                     break;
                 
+                // signed decimal int
+                case 'd':
                 // signed decimal int, same as 'd'
                 case 'i':
-                    itoa(va_arg(args, int), temp, 10);
+                    switch (arg_size)
+                    {
+                        case INT:
+                            itoa(va_arg(args, int), temp, 10, TRUE);
+                            break;
+                        
+                        case SHORT:
+                            htoa(va_arg(args, int), temp, 10, TRUE);
+                            break;
+                        
+                        case LONG:
+                            ltoa(va_arg(args, long), temp, 10, TRUE);
+                            break;
+                        
+                        case LONGLONG:
+                            lltoa(va_arg(args, long long), temp, 10, TRUE);
+                            break;
+                    }
+
                     for (k = 0; k < strlen(temp); k++)
                     {
                         if (j < maxlen-1)
@@ -105,7 +130,25 @@ int vsnprintf(char *str, size_t maxlen, const char *fmt, va_list args)
                 
                 // unsigned decimal int
                 case 'u':
-                    itoa_unsigned(va_arg(args, int), temp, 10);
+                    switch (arg_size)
+                    {
+                        case INT:
+                            itoa(va_arg(args, int), temp, 10, FALSE);
+                            break;
+                        
+                        case SHORT:
+                            htoa(va_arg(args, int), temp, 10, FALSE);
+                            break;
+                        
+                        case LONG:
+                            ltoa(va_arg(args, long), temp, 10, FALSE);
+                            break;
+                        
+                        case LONGLONG:
+                            lltoa(va_arg(args, long long), temp, 10, FALSE);
+                            break;
+                    }
+
                     for (k = 0; k < strlen(temp); k++)
                     {
                         if (j < maxlen-1)
@@ -121,7 +164,25 @@ int vsnprintf(char *str, size_t maxlen, const char *fmt, va_list args)
                 
                 // unsigned hexadecimal int
                 case 'x':
-                    itoa(va_arg(args, int), temp, 16);
+                    switch (arg_size)
+                    {
+                        case INT:
+                            itoa(va_arg(args, int), temp, 16, FALSE);
+                            break;
+                        
+                        case SHORT:
+                            htoa(va_arg(args, int), temp, 16, FALSE);
+                            break;
+                        
+                        case LONG:
+                            ltoa(va_arg(args, long), temp, 16, FALSE);
+                            break;
+                        
+                        case LONGLONG:
+                            lltoa(va_arg(args, long long), temp, 16, FALSE);
+                            break;
+                    }
+
                     for (k = 0; k < strlen(temp); k++)
                     {
                         if (j < maxlen-1)
@@ -137,7 +198,25 @@ int vsnprintf(char *str, size_t maxlen, const char *fmt, va_list args)
                 
                 // unsigned hexadecimal int, uppercase
                 case 'X':
-                    itoa_uppercase(va_arg(args, int), temp, 16);
+                    switch (arg_size)
+                    {
+                        case INT:
+                            itoa_uppercase(va_arg(args, int), temp, 16);
+                            break;
+                        
+                        case SHORT:
+                            htoa_uppercase(va_arg(args, int), temp, 16);
+                            break;
+                        
+                        case LONG:
+                            ltoa_uppercase(va_arg(args, long), temp, 16);
+                            break;
+                        
+                        case LONGLONG:
+                            lltoa_uppercase(va_arg(args, long long), temp, 16);
+                            break;
+                    }
+
                     for (k = 0; k < strlen(temp); k++)
                     {
                         if (j < maxlen-1)
@@ -178,6 +257,10 @@ int vsnprintf(char *str, size_t maxlen, const char *fmt, va_list args)
                     expecting_specifier = FALSE;
                     break;
             }
+
+            // if not expecting a specifier, reset arg size to int
+            if (!expecting_specifier)
+                arg_size = INT;
         }
     }
     str[j] = 0;

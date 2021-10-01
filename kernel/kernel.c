@@ -10,17 +10,8 @@
 #include "../drivers/pic.h"
 #include "init/memmap.h"
 
-void kmain()
+void kernel_init()
 {
-#ifdef __DEBUG__
-    set_log_dst_severity(DST_SCREEN, LOG_DEBUG);
-#endif
-
-    // initialize screen before printing anything
-    init_screen();
-
-    log("SYS", 5, "INIT", "Kernel started");
-
     // install ISRs
     install_isrs();
     log("SYS", 6, "INIT", "ISRs have been installed");
@@ -40,4 +31,19 @@ void kmain()
     // obtain a memory map
     log("SYS", 6, "INIT", "Detecting memory");
     obtain_memmap();
+}
+
+void kmain()
+{
+#ifdef __DEBUG__
+    set_log_dst_severity(DST_SCREEN, LOG_DEBUG);
+#endif
+
+    // initialize screen before printing anything
+    init_screen();
+
+    log("SYS", 5, "INIT", "Kernel started");
+
+    // perform initialization tasks
+    kernel_init();
 }
