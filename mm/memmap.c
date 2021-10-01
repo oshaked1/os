@@ -28,7 +28,9 @@ The following is an example of the kernel memory layout:
 |          Kernel image         |
 +-------------------------------+ 0x00200000
 |          Kernel heap          |
-+-------++--------++--------++--+
++-------------------------------+ 0x00600000
+|        Page frame pool        | 
++-------++--------++--------++--+ 
 |       ||        ||        ||  |
 |  /\   \/   /\   \/   /\   \/  |
 |  ||        ||        ||       |
@@ -36,9 +38,9 @@ The following is an example of the kernel memory layout:
 |            Stacks             |
 +-------------------------------+ 0x08000000 - end of physical memory
 
-It contains 5 regions, which is the size of our memory region array.
+It contains 6 regions, which is the size of our memory region array.
 */
-#define MEMMAP_ENTRIES 5
+#define MEMMAP_ENTRIES 6
 memory_region memmap[MEMMAP_ENTRIES];
 
 void obtain_bios_memmap()
@@ -147,29 +149,34 @@ void init_kernel_memmap()
         kernel_panic("Address range from 0x%x to 0x%x is not usable (needed for kernel image)",
             KERNEL_LOAD_ADDRESS, KERNEL_LOAD_ADDRESS + KERNEL_SIZE);
     
-    // make sure we have enough free memory for kernel heap and stacks
+    // make sure we have enough free memory for kernel heap, page frame pool and stacks
     find_free_memory();
     if (freemem_size < MIN_FREE_MEM)
     {
-        uint freemem_kb = (uint)freemem_size / 1024;
-        uint req_mem_kb = MIN_FREE_MEM / 1024;
-        kernel_panic("Not enough contiguous memory is available (%uKB detected, %uKB required)",
-            freemem_kb, req_mem_kb);
+        uint freemem_mb = (uint)freemem_size / 1024 / 1024;
+        uint req_mem_mb = MIN_FREE_MEM / 1024 / 1024;
+        kernel_panic("Not enough contiguous memory is available (%uMB detected, %uMB required)",
+            freemem_mb, req_mem_mb);
     }
     
-    // heap starts immediately after kernel image (on a page boudary) and its initial size is 1/10th of available memory
+    // kernel heap starts immediately after kernel image (on a page boudary)
     if (freemem_start % PAGE_SIZE == 0)
         memmap[3].base = freemem_start;
     else
         memmap[3].base = freemem_start + (PAGE_SIZE - (freemem_start % PAGE_SIZE));
-    memmap[3].len  = (freemem_size / 10) + (PAGE_SIZE - ((freemem_size / 10) % PAGE_SIZE));
+    memmap[3].len  = KERNEL_HEAP_SIZE;
     memmap[3].type = TYPE_KERNEL_HEAP;
+
+    // page frame pool starts immediately after kernel heap and its initial size is 1/10th of available memory
+    memmap[4].base = memmap[3].base + KERNEL_HEAP_SIZE;
+    memmap[4].len  = (freemem_size / 10) + (PAGE_SIZE - ((freemem_size / 10) % PAGE_SIZE));
+    memmap[4].type = TYPE_PAGE_FRAME_POOL;
 
     // stack region ends at the end of free memory and its initial size is 1/10th of available memory
     uint64 stack_end = freemem_end - (freemem_end % PAGE_SIZE);
-    memmap[4].len  = memmap[3].len;
-    memmap[4].base = stack_end - memmap[4].len;
-    memmap[4].type = TYPE_STACK;
+    memmap[5].len  = memmap[4].len;
+    memmap[5].base = stack_end - memmap[5].len;
+    memmap[5].type = TYPE_STACK;
 
     // print memory regions for debugging
     int i;
