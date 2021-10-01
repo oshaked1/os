@@ -13,20 +13,20 @@
 void kernel_init()
 {
     // install ISRs
+    log("SYS", 6, "INIT", "Installing ISRs");
     install_isrs();
-    log("SYS", 6, "INIT", "ISRs have been installed");
 
     // install IRQs
+    log("SYS", 6, "INIT", "Installing IRQs");
     install_irqs();
-    log("SYS", 6, "INIT", "IRQs have been installed");
 
     // setup PIC
+    log("SYS", 6, "INIT", "Remapping the PIC");
     setup_pic();
-    log("SYS", 6, "INIT", "PIC has been remapped");
 
     // setup the IDT
+    log("SYS", 6, "INIT", "Loading kernel IDT");
     setup_idt();
-    log("SYS", 6, "INIT", "IDT has been loaded");
 
     // obtain a memory map
     log("SYS", 6, "INIT", "Detecting physical memory");
