@@ -52,11 +52,18 @@ void kmain()
     // perform initialization tasks
     kernel_init();
 
-    // test kmalloc - last few allocations should fail
-    int i;
-    for(i=0;i<1030;i++)
-    {
-        void *block = kmalloc(1000);
-    }
+    // test kmalloc
+    void *test1;
+    void *test2;
+    void *test3;
+    void *test4;
+    test1 = kmalloc(5000);
+    test2 = kmalloc(2000);
+    kfree(test1);
+    test3 = kmalloc(9000);
+    kfree(test2);
+    test4 = kmalloc(6000);
+    test1 = kmalloc(1000);
+    //kfree(test);
     debug("done!");
 }

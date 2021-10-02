@@ -6,3 +6,4 @@
 #define BLOCK_SIZE(order) (MIN_BLOCK_SIZE << (order))
 
 void *kmalloc(size_t size);
+void kfree(const void *ptr);
