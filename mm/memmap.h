@@ -45,3 +45,4 @@ typedef struct memory_region
 
 void obtain_bios_memmap();
 void init_kernel_memmap();
+void *kernel_heap_base();

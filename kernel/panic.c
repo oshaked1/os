@@ -10,6 +10,6 @@ void kernel_panic(const char *msg, ...)
     va_start(args, msg);
     vsnprintf(str, MAX_LOG_LENGTH, msg, args);
     va_end(args);
-    log("SYS", 0, "PANIC", "KERNEL PANIC: %s", str);
+    log("SYS", LOG_EMERG, "PANIC", "KERNEL PANIC: %s", str);
     hardware_warm_reset();
 }

@@ -186,3 +186,13 @@ void init_kernel_memmap()
             memmap[i].base, memmap[i].len, memmap[i].len / 1024, memmap[i].type);
     }
 }
+
+void *kernel_heap_base()
+{
+    int i;
+    for (i = 0; i < MEMMAP_ENTRIES; i++)
+    {
+        if (memmap[i].type == TYPE_KERNEL_HEAP)
+            return (void*)(size_t)memmap[i].base;
+    }
+}

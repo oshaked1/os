@@ -10,6 +10,10 @@ OBJ16 = ${C_REALMODE_SOURCES:.c=.o16}
 DEBUG          = TRUE  # extra debugging messages (can be very verbose)
 REALMODE_DEBUG = FALSE # print real mode service messages to screen
 
+# Specific facility debugging
+DEBUG_KERNEL_HEAP = FALSE # kernel heap allocator actions, VERY VERBOSE
+DEBUG_MEMORY      = FALSE # memory allocation messages
+
 # Size of binary files after padding - MUST BE DIVISIBLE BY 512 (sector size)
 REALMODE_SIZE = 4096
 KERNEL_SIZE   = 32768
@@ -40,6 +44,7 @@ endef
 
 # Print colors
 RED = '\033[0;31m'
+LIGHT_CYAN = '\033[1;36m'
 NC  = '\033[0m' # no color
 
 ### Preprocessor definitions
@@ -50,6 +55,12 @@ DEBUG_DEFS = -D __DEBUG__
 endif
 ifeq (${strip ${REALMODE_DEBUG}}, TRUE)
 DEBUG_DEFS := ${DEBUG_DEFS} -D __REALMODE_DEBUG__
+endif
+ifeq (${strip ${DEBUG_KERNEL_HEAP}}, TRUE)
+DEBUG_DEFS := ${DEBUG_DEFS} -D __DEBUG_KERNEL_HEAP__
+endif
+ifeq (${strip ${DEBUG_MEMORY}}, TRUE)
+DEBUG_DEFS := ${DEBUG_DEFS} -D __DEBUG_MEMORY__
 endif
 
 # Full definition lists
@@ -71,7 +82,7 @@ os-image.bin: boot/bootsector.bin realmode.bin kernel.bin
 # to 'strip' them manually
 kernel.bin: boot/kernel_entry.o ${OBJ}
 	${LD} -o $@ -Ttext ${KERNEL_LOAD_ADDRESS} $^ --oformat binary
-	echo ${RED}Raw kernel size: ${call sizeof,$@}${NC}
+	echo ${LIGHT_CYAN}Raw kernel size: ${call sizeof,$@}${NC}
 	dd if=/dev/zero of=$@ bs=1 count=1 seek=${shell expr ${KERNEL_SIZE} - 1}
 
 # Used for debugging purposes
@@ -80,7 +91,7 @@ kernel.elf: boot/kernel_entry.o ${OBJ}
 
 realmode.bin: arch/x86/realmode/realmode_entry.o ${OBJ16}
 	${LD} -o $@ -Ttext ${REALMODE_LOAD_ADDRESS} $^ --oformat binary
-	echo ${RED}Raw realmoe size: ${call sizeof,$@}${NC}
+	echo ${LIGHT_CYAN}Raw realmode size: ${call sizeof,$@}${NC}
 	dd if=/dev/zero of=$@ bs=1 count=1 seek=${shell expr ${REALMODE_SIZE} - 1}
 
 # Used for debugging purposes

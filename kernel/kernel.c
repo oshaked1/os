@@ -9,31 +9,32 @@
 #include "irq.h"
 #include "../drivers/pic.h"
 #include "../mm/memmap.h"
+#include "../mm/kernel_heap.h"
 
 void kernel_init()
 {
     // install ISRs
-    log("SYS", 6, "INIT", "Installing ISRs");
+    log("SYS", LOG_INFO, "INIT", "Installing ISRs");
     install_isrs();
 
     // install IRQs
-    log("SYS", 6, "INIT", "Installing IRQs");
+    log("SYS", LOG_INFO, "INIT", "Installing IRQs");
     install_irqs();
 
     // setup PIC
-    log("SYS", 6, "INIT", "Remapping the PIC");
+    log("SYS", LOG_INFO, "INIT", "Remapping the PIC");
     setup_pic();
 
     // setup the IDT
-    log("SYS", 6, "INIT", "Loading kernel IDT");
+    log("SYS", LOG_INFO, "INIT", "Loading kernel IDT");
     setup_idt();
 
     // obtain a memory map
-    log("SYS", 6, "INIT", "Detecting physical memory");
+    log("SYS", LOG_INFO, "INIT", "Detecting physical memory");
     obtain_bios_memmap();
 
     // initialize kernel memory regions
-    log("SYS", 6, "INIT", "Initializing kernel memory layout");
+    log("SYS", LOG_INFO, "INIT", "Initializing kernel memory layout");
     init_kernel_memmap();
 }
 
@@ -46,8 +47,16 @@ void kmain()
     // initialize screen before printing anything
     init_screen();
 
-    log("SYS", 5, "INIT", "Kernel started");
+    log("SYS", LOG_NOTICE, "INIT", "Kernel started");
 
     // perform initialization tasks
     kernel_init();
+
+    // test kmalloc - last few allocations should fail
+    int i;
+    for(i=0;i<1030;i++)
+    {
+        void *block = kmalloc(1000);
+    }
+    debug("done!");
 }

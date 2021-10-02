@@ -245,6 +245,24 @@ int vsnprintf(char *str, size_t maxlen, const char *fmt, va_list args)
                     expecting_specifier = FALSE;
                     break;
 
+                // pointer, print as hex using the correct ineger size
+                case 'p':
+                    // long is equivalent to size_t
+                    ltoa(va_arg(args, long), temp, 16, FALSE);
+
+                    for (k = 0; k < strlen(temp); k++)
+                    {
+                        if (j < maxlen-1)
+                            str[j++] = temp[k];
+                        else 
+                        {
+                            str[maxlen-1] = 0;
+                            return maxlen;
+                        }
+                    }
+                    expecting_specifier = FALSE;
+                    break;
+
                 // all unexpected specifiers are treated as part of the string
                 default:
                     if (j < maxlen-1)

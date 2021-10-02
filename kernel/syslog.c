@@ -123,5 +123,5 @@ void debug(const char *message, ...)
     vsnprintf(str, MAX_LOG_LENGTH, message, args);
     va_end(args);
 
-    log("SYS", 7, "DEBUG", str);
+    log("SYS", LOG_DEBUG, "DEBUG", str);
 }
