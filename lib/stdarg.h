@@ -11,5 +11,5 @@ typedef char* va_list;
 #define va_arg(AP, TYPE)  \
  (AP += __va_rounded_size (TYPE),    \
   *((TYPE *) (AP - ((sizeof(TYPE) < 4)  \
-		    ? sizeof(TYPE)  \
-		    : __va_rounded_size (TYPE)))))
+            ? sizeof(TYPE)  \
+            : __va_rounded_size (TYPE)))))

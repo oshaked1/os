@@ -163,10 +163,10 @@ init_16_bit_pm:
     ; load data segment selector into segment registers
     mov eax, DATA_SEGMENT
     mov ds, eax
-	mov es, eax
-	mov fs, eax
-	mov gs, eax
-	mov ss, eax
+    mov es, eax
+    mov fs, eax
+    mov gs, eax
+    mov ss, eax
 
     ; disable paging and set real mode in CR0
     mov eax, cr0
@@ -185,10 +185,10 @@ init_real_mode:
     ; load segment selectors
     mov ax, 0
     mov ds, ax
-	mov es, ax
-	mov fs, ax
-	mov gs, ax
-	mov ss, ax
+    mov es, ax
+    mov fs, ax
+    mov gs, ax
+    mov ss, ax
 
     ; load real-mode IDT
     lidt [idt_desc_real]
