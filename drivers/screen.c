@@ -133,7 +133,9 @@ uint kputchar_color(uchar c, uchar color)
         // handle backspace by moving the cursor one cell back and setting it's contents to none
         case '\b':
             // make sure we aren't returning to the previous row, or if we are, that it is allowed
-            if ((GET_ROW(cursor_pos) == GET_ROW(cursor_pos-1)) || locked_rows[GET_ROW(cursor_pos)-1] == FALSE)
+            bool same_row = GET_ROW(cursor_pos) == GET_ROW(cursor_pos-1);
+            int prev_row = GET_ROW(cursor_pos) - 1;
+            if (same_row || (prev_row >= 0 && locked_rows[prev_row] == FALSE))
             {
                 cursor_pos -= 1;
                 set_cursor_pos(cursor_pos);
