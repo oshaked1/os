@@ -1,5 +1,7 @@
 # My OS (still needs a name)
 
+:warning: This project is not actively developed anymore. For information regarding the current state, see [current features](./CURRENT_FEATURES.md).
+
 Welcome to my humble OS. It's still not much, but we're getting there 😉
 
 ## Project Description
