@@ -20,7 +20,7 @@ The following are the currently implemented features of the OS.
 
 - The real mode services code is contained in the 2nd stage bootloader image, but its code is independent from the actual bootloader code.
 
-- Whenever the kernel wants to use a real mode service, it builds a service packet which details its request and performs and `int 0x81`.
+- Whenever the kernel wants to use a real mode service, it builds a service packet which details its request and performs an `int 0x81`.
 
 - The interrupt handler jumps to a static location in the 2nd stage bootloader image, which transitions into 16-bit real mode and performs the requested service.
 
@@ -52,7 +52,7 @@ The kernel has some groundwork laid down, but it doesn't really do anything yet.
 
 - Logs are printed to the screen and sent through the serial port (for external debugging)
 
-- Each log destination can be configured to receivce logs of specified severity (or higher)
+- Each log destination can be configured to receivce logs of a specified severity (or higher)
 
 ## Device Drivers
 
